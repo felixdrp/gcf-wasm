@@ -6,7 +6,7 @@ All notable changes to this project are documented here. Versions follow
 [gcf-zig](https://codeberg.org/felixdrp/gcf-zig) version it is tested against
 (the `reference/gcf-zig` submodule).
 
-## 0.1.0 — unreleased
+## 0.1.0 — 2026-10-28
 
 First public release. Implements GCF specification **v3.6.0** and passes
 all 323 official conformance fixtures. Tested byte for byte against
