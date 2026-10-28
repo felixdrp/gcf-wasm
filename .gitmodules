@@ -1,0 +1,3 @@
+[submodule "reference/gcf-zig"]
+	path = reference/gcf-zig
+	url = https://codeberg.org/felixdrp/gcf-zig.git

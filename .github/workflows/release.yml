@@ -1,0 +1,67 @@
+# SPDX-License-Identifier: Apache-2.0
+# Release on a version tag (v*): test, then publish
+#   * gcf.wasm (+ SHA-256 sums) as release assets: the hand-written WAT codec
+#     without debug names (dist/gcf.wasm), the same module the npm package
+#     ships, plus the SIMD structural indexer (gcf_simd.wasm,
+#     gcf_simd.relaxed.wasm)
+#   * @felixdrp/gcf-wasm to npm with provenance
+# Requires the repository secret NPM_TOKEN (or npm trusted publishing).
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write   # create the GitHub release
+  id-token: write   # npm provenance
+
+env:
+  GCF_SPEC_REPO: https://github.com/blackwell-systems/gcf.git
+  GCF_SPEC_COMMIT: c2877f4795f9473f9a65fe52678cbea148876ca5
+  GCF_REQUIRE_ORACLE: "1"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.17.0   # the Zig reference build uses the stable compiler
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - name: Check that the tag matches the package version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          grep -q "\"version\": \"$tag\"" npm/package.json
+      - name: Fetch conformance fixtures
+        run: |
+          git clone --filter=blob:none "$GCF_SPEC_REPO" vendor/gcf
+          git -C vendor/gcf checkout "$GCF_SPEC_COMMIT"
+      - run: bun install --frozen-lockfile
+      - run: bun run test
+        env:
+          GCF_PERF_ASSERT: "0"
+      - run: bun run test:oracle
+      - run: bun run build:npm
+      - name: Release assets
+        run: |
+          mkdir release
+          cp dist/gcf.wasm dist/gcf_simd.wasm dist/gcf_simd.relaxed.wasm release/
+          cmp release/gcf.wasm npm/dist/gcf.wasm   # the release and npm ship the same module
+          (cd release && sha256sum *.wasm > SHA256SUMS)
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
+      - name: Publish to npm
+        working-directory: npm
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,0 +1,1442 @@
+{
+  "runtime": "node v26.5.1",
+  "module": "gcf.wasm",
+  "date": "2026-10-12T22:38:47.770Z",
+  "results": [
+    {
+      "operation": "decode",
+      "payload": "tabular-small",
+      "bytes": 3016,
+      "impl": "blackwell-ts (string -> JS object)",
+      "medianMs": 0.11261286666667729,
+      "p90Ms": 0.20683719999998781,
+      "samples": 400,
+      "mbps": 26.7820195797613
+    },
+    {
+      "operation": "decode",
+      "payload": "tabular-small",
+      "bytes": 3016,
+      "impl": "ours wasm (string -> JS object)",
+      "medianMs": 0.05805523529412473,
+      "p90Ms": 0.05978155882352814,
+      "samples": 400,
+      "mbps": 51.95052581769871
+    },
+    {
+      "operation": "decode",
+      "payload": "tabular-small",
+      "bytes": 3016,
+      "impl": "ours wasm (string -> JSON text)",
+      "medianMs": 0.03426706896551689,
+      "p90Ms": 0.036539672413796166,
+      "samples": 400,
+      "mbps": 88.01453089072236
+    },
+    {
+      "operation": "decode",
+      "payload": "tabular-small",
+      "bytes": 3016,
+      "impl": "ours wasm (bytes -> value tree)",
+      "medianMs": 0.01515959374999909,
+      "p90Ms": 0.016204015625000068,
+      "samples": 400,
+      "mbps": 198.94992238826856
+    },
+    {
+      "operation": "decode",
+      "payload": "nested-small",
+      "bytes": 2147,
+      "impl": "blackwell-ts (string -> JS object)",
+      "medianMs": 0.0850266315789524,
+      "p90Ms": 0.17254421052630756,
+      "samples": 400,
+      "mbps": 25.25091209812751
+    },
+    {
+      "operation": "decode",
+      "payload": "nested-small",
+      "bytes": 2147,
+      "impl": "ours wasm (string -> JS object)",
+      "medianMs": 0.04752065853659676,
+      "p90Ms": 0.0486038048780623,
+      "samples": 400,
+      "mbps": 45.180350317463414
+    },
+    {
+      "operation": "decode",
+      "payload": "nested-small",
+      "bytes": 2147,
+      "impl": "ours wasm (string -> JSON text)",
+      "medianMs": 0.027798876923085258,
+      "p90Ms": 0.02813652307692022,
+      "samples": 400,
+      "mbps": 77.23333593441139
+    },
+    {
+      "operation": "decode",
+      "payload": "nested-small",
+      "bytes": 2147,
+      "impl": "ours wasm (bytes -> value tree)",
+      "medianMs": 0.01653645000001234,
+      "p90Ms": 0.016643333333331612,
+      "samples": 400,
+      "mbps": 129.83439613692164
+    },
+    {
+      "operation": "decode",
+      "payload": "keyed-small",
+      "bytes": 1315,
+      "impl": "blackwell-ts (string -> JS object)",
+      "medianMs": 0.07387856521737653,
+      "p90Ms": 0.1325759565217753,
+      "samples": 400,
+      "mbps": 17.799479404219763
+    },
+    {
+      "operation": "decode",
+      "payload": "keyed-small",
+      "bytes": 1315,
+      "impl": "ours wasm (string -> JS object)",
+      "medianMs": 0.03490029824560655,
+      "p90Ms": 0.035217596491221276,
+      "samples": 400,
+      "mbps": 37.6787611024367
+    },
+    {
+      "operation": "decode",
+      "payload": "keyed-small",
+      "bytes": 1315,
+      "impl": "ours wasm (string -> JSON text)",
+      "medianMs": 0.02140118085107462,
+      "p90Ms": 0.021692989361694576,
+      "samples": 400,
+      "mbps": 61.445207586943496
+    },
+    {
+      "operation": "decode",
+      "payload": "keyed-small",
+      "bytes": 1315,
+      "impl": "ours wasm (bytes -> value tree)",
+      "medianMs": 0.011345017751479575,
+      "p90Ms": 0.011693047337273542,
+      "samples": 400,
+      "mbps": 115.90991118797523
+    },
+    {
+      "operation": "decode",
+      "payload": "mixed-small",
+      "bytes": 786,
+      "impl": "blackwell-ts (string -> JS object)",
+      "medianMs": 0.021858662790691596,
+      "p90Ms": 0.022474244186056706,
+      "samples": 400,
+      "mbps": 35.95828379468456
+    },
+    {
+      "operation": "decode",
+      "payload": "mixed-small",
+      "bytes": 786,
+      "impl": "ours wasm (string -> JS object)",
+      "medianMs": 0.011206349693259269,
+      "p90Ms": 0.011480478527604412,
+      "samples": 400,
+      "mbps": 70.13880715080549
+    },
+    {
+      "operation": "decode",
+      "payload": "mixed-small",
+      "bytes": 786,
+      "impl": "ours wasm (string -> JSON text)",
+      "medianMs": 0.006699866438357774,
+      "p90Ms": 0.006975260273975437,
+      "samples": 400,
+      "mbps": 117.31577147568616
+    },
+    {
+      "operation": "decode",
+      "payload": "mixed-small",
+      "bytes": 786,
+      "impl": "ours wasm (bytes -> value tree)",
+      "medianMs": 0.004157363440855832,
+      "p90Ms": 0.004410290322579464,
+      "samples": 400,
+      "mbps": 189.0621330518543
+    },
+    {
+      "operation": "decode",
+      "payload": "quoted-small",
+      "bytes": 1578,
+      "impl": "blackwell-ts (string -> JS object)",
+      "medianMs": 0.04803364705880727,
+      "p90Ms": 0.10115164705872731,
+      "samples": 400,
+      "mbps": 32.85197141220747
+    },
+    {
+      "operation": "decode",
+      "payload": "quoted-small",
+      "bytes": 1578,
+      "impl": "ours wasm (string -> JS object)",
+      "medianMs": 0.02882736764706137,
+      "p90Ms": 0.029697985294072114,
+      "samples": 400,
+      "mbps": 54.73964946504089
+    },
+    {
+      "operation": "decode",
+      "payload": "quoted-small",
+      "bytes": 1578,
+      "impl": "ours wasm (string -> JSON text)",
+      "medianMs": 0.019210415841587405,
+      "p90Ms": 0.01947993069307534,
+      "samples": 400,
+      "mbps": 82.14293813379554
+    },
+    {
+      "operation": "decode",
+      "payload": "quoted-small",
+      "bytes": 1578,
+      "impl": "ours wasm (bytes -> value tree)",
+      "medianMs": 0.010185548717951557,
+      "p90Ms": 0.010236410256411779,
+      "samples": 400,
+      "mbps": 154.92537944655334
+    },
+    {
+      "operation": "decode",
+      "payload": "graph-small",
+      "bytes": 2281,
+      "impl": "blackwell-ts (string -> JS object)",
+      "medianMs": 0.02294003947367616,
+      "p90Ms": 0.04305350000001789,
+      "samples": 400,
+      "mbps": 99.4331331738754
+    },
+    {
+      "operation": "decode",
+      "payload": "graph-small",
+      "bytes": 2281,
+      "impl": "ours wasm (string -> JS object)",
+      "medianMs": 0.018511081632674845,
+      "p90Ms": 0.020293622448996164,
+      "samples": 400,
+      "mbps": 123.22348554574421
+    },
+    {
+      "operation": "decode",
+      "payload": "graph-small",
+      "bytes": 2281,
+      "impl": "ours wasm (string -> JSON text)",
+      "medianMs": 0.019399960396059564,
+      "p90Ms": 0.020612603960423914,
+      "samples": 400,
+      "mbps": 117.57755961518906
+    },
+    {
+      "operation": "decode",
+      "payload": "graph-small",
+      "bytes": 2281,
+      "impl": "ours wasm (bytes -> value tree)",
+      "medianMs": 0.00571702052785971,
+      "p90Ms": 0.005759064516131039,
+      "samples": 400,
+      "mbps": 398.9840492760906
+    },
+    {
+      "operation": "decode",
+      "payload": "tabular-large",
+      "bytes": 1323396,
+      "impl": "blackwell-ts (string -> JS object)",
+      "medianMs": 57.553092000001925,
+      "p90Ms": 66.14712100000179,
+      "samples": 26,
+      "mbps": 22.994351024614904
+    },
+    {
+      "operation": "decode",
+      "payload": "tabular-large",
+      "bytes": 1323396,
+      "impl": "ours wasm (string -> JS object)",
+      "medianMs": 24.943445000000793,
+      "p90Ms": 26.767813999998907,
+      "samples": 59,
+      "mbps": 53.05586297321633
+    },
+    {
+      "operation": "decode",
+      "payload": "tabular-large",
+      "bytes": 1323396,
+      "impl": "ours wasm (string -> JSON text)",
+      "medianMs": 15.155126999998174,
+      "p90Ms": 15.962863000000652,
+      "samples": 96,
+      "mbps": 87.32331969241561
+    },
+    {
+      "operation": "decode",
+      "payload": "tabular-large",
+      "bytes": 1323396,
+      "impl": "ours wasm (bytes -> value tree)",
+      "medianMs": 6.333243000000948,
+      "p90Ms": 6.593138000003819,
+      "samples": 237,
+      "mbps": 208.96024359081153
+    },
+    {
+      "operation": "decode",
+      "payload": "nested-large",
+      "bytes": 888939,
+      "impl": "blackwell-ts (string -> JS object)",
+      "medianMs": 42.54096800000116,
+      "p90Ms": 49.84913100000267,
+      "samples": 35,
+      "mbps": 20.896068937593895
+    },
+    {
+      "operation": "decode",
+      "payload": "nested-large",
+      "bytes": 888939,
+      "impl": "ours wasm (string -> JS object)",
+      "medianMs": 22.413625000001048,
+      "p90Ms": 24.597303999995347,
+      "samples": 66,
+      "mbps": 39.66065283950983
+    },
+    {
+      "operation": "decode",
+      "payload": "nested-large",
+      "bytes": 888939,
+      "impl": "ours wasm (string -> JSON text)",
+      "medianMs": 12.555563000001712,
+      "p90Ms": 13.51433199999883,
+      "samples": 116,
+      "mbps": 70.80040934842022
+    },
+    {
+      "operation": "decode",
+      "payload": "nested-large",
+      "bytes": 888939,
+      "impl": "ours wasm (bytes -> value tree)",
+      "medianMs": 6.883732999995118,
+      "p90Ms": 7.286000000000058,
+      "samples": 214,
+      "mbps": 129.13618235928536
+    },
+    {
+      "operation": "decode",
+      "payload": "keyed-large",
+      "bytes": 530335,
+      "impl": "blackwell-ts (string -> JS object)",
+      "medianMs": 36.5144650000002,
+      "p90Ms": 45.98271999999997,
+      "samples": 40,
+      "mbps": 14.523970158127666
+    },
+    {
+      "operation": "decode",
+      "payload": "keyed-large",
+      "bytes": 530335,
+      "impl": "ours wasm (string -> JS object)",
+      "medianMs": 15.854657000003499,
+      "p90Ms": 16.941309000001638,
+      "samples": 91,
+      "mbps": 33.44979333200857
+    },
+    {
+      "operation": "decode",
+      "payload": "keyed-large",
+      "bytes": 530335,
+      "impl": "ours wasm (string -> JSON text)",
+      "medianMs": 8.604000999999698,
+      "p90Ms": 8.86860400000296,
+      "samples": 169,
+      "mbps": 61.63818437492262
+    },
+    {
+      "operation": "decode",
+      "payload": "keyed-large",
+      "bytes": 530335,
+      "impl": "ours wasm (bytes -> value tree)",
+      "medianMs": 4.505055000001448,
+      "p90Ms": 4.6770160000014585,
+      "samples": 329,
+      "mbps": 117.71998344078585
+    },
+    {
+      "operation": "decode",
+      "payload": "mixed-large",
+      "bytes": 263525,
+      "impl": "blackwell-ts (string -> JS object)",
+      "medianMs": 7.333163000002969,
+      "p90Ms": 9.509887000000163,
+      "samples": 189,
+      "mbps": 35.936061969424834
+    },
+    {
+      "operation": "decode",
+      "payload": "mixed-large",
+      "bytes": 263525,
+      "impl": "ours wasm (string -> JS object)",
+      "medianMs": 3.4034670000037295,
+      "p90Ms": 3.609598000002734,
+      "samples": 400,
+      "mbps": 77.42839874742762
+    },
+    {
+      "operation": "decode",
+      "payload": "mixed-large",
+      "bytes": 263525,
+      "impl": "ours wasm (string -> JSON text)",
+      "medianMs": 1.9997070000026724,
+      "p90Ms": 2.044902000001457,
+      "samples": 400,
+      "mbps": 131.78180603440796
+    },
+    {
+      "operation": "decode",
+      "payload": "mixed-large",
+      "bytes": 263525,
+      "impl": "ours wasm (bytes -> value tree)",
+      "medianMs": 1.3694335000000137,
+      "p90Ms": 1.438392500000191,
+      "samples": 400,
+      "mbps": 192.4335865889051
+    },
+    {
+      "operation": "decode",
+      "payload": "quoted-large",
+      "bytes": 684025,
+      "impl": "blackwell-ts (string -> JS object)",
+      "medianMs": 23.350318000004336,
+      "p90Ms": 25.446383000002243,
+      "samples": 63,
+      "mbps": 29.294033597310023
+    },
+    {
+      "operation": "decode",
+      "payload": "quoted-large",
+      "bytes": 684025,
+      "impl": "ours wasm (string -> JS object)",
+      "medianMs": 12.298700000006647,
+      "p90Ms": 14.030198000000382,
+      "samples": 116,
+      "mbps": 55.61766690785451
+    },
+    {
+      "operation": "decode",
+      "payload": "quoted-large",
+      "bytes": 684025,
+      "impl": "ours wasm (string -> JSON text)",
+      "medianMs": 8.462297999998555,
+      "p90Ms": 8.981901999999536,
+      "samples": 170,
+      "mbps": 80.83206240197602
+    },
+    {
+      "operation": "decode",
+      "payload": "quoted-large",
+      "bytes": 684025,
+      "impl": "ours wasm (bytes -> value tree)",
+      "medianMs": 4.228335000007064,
+      "p90Ms": 4.322826000003261,
+      "samples": 349,
+      "mbps": 161.7717139249509
+    },
+    {
+      "operation": "decode",
+      "payload": "graph-large",
+      "bytes": 969609,
+      "impl": "blackwell-ts (string -> JS object)",
+      "medianMs": 11.536206999997376,
+      "p90Ms": 15.131328999996185,
+      "samples": 122,
+      "mbps": 84.04920265388968
+    },
+    {
+      "operation": "decode",
+      "payload": "graph-large",
+      "bytes": 969609,
+      "impl": "ours wasm (string -> JS object)",
+      "medianMs": 6.974059000000125,
+      "p90Ms": 7.586819000003743,
+      "samples": 202,
+      "mbps": 139.0307997107542
+    },
+    {
+      "operation": "decode",
+      "payload": "graph-large",
+      "bytes": 969609,
+      "impl": "ours wasm (string -> JSON text)",
+      "medianMs": 9.543653000000631,
+      "p90Ms": 9.956263000000035,
+      "samples": 149,
+      "mbps": 101.59726050391144
+    },
+    {
+      "operation": "decode",
+      "payload": "graph-large",
+      "bytes": 969609,
+      "impl": "ours wasm (bytes -> value tree)",
+      "medianMs": 2.6457250000094064,
+      "p90Ms": 2.7214880000101402,
+      "samples": 400,
+      "mbps": 366.48139923709107
+    },
+    {
+      "operation": "encode",
+      "payload": "tabular-small",
+      "bytes": 7379,
+      "impl": "blackwell-ts (JS value -> GCF)",
+      "medianMs": 0.05753182352910859,
+      "p90Ms": 0.05925500000012107,
+      "samples": 400,
+      "mbps": 128.25944924666865
+    },
+    {
+      "operation": "encode",
+      "payload": "tabular-small",
+      "bytes": 7379,
+      "impl": "ours wasm (JS value -> GCF)",
+      "medianMs": 0.05266255263153365,
+      "p90Ms": 0.05326044736820653,
+      "samples": 400,
+      "mbps": 140.11854023918983
+    },
+    {
+      "operation": "encode",
+      "payload": "tabular-small",
+      "bytes": 7379,
+      "impl": "ours wasm (JSON text -> GCF)",
+      "medianMs": 0.03746092452817017,
+      "p90Ms": 0.037737226415148775,
+      "samples": 400,
+      "mbps": 196.97858749991823
+    },
+    {
+      "operation": "encode",
+      "payload": "nested-small",
+      "bytes": 3575,
+      "impl": "blackwell-ts (JS value -> GCF)",
+      "medianMs": 0.047880560975655254,
+      "p90Ms": 0.05079982926850434,
+      "samples": 400,
+      "mbps": 74.66495644897935
+    },
+    {
+      "operation": "encode",
+      "payload": "nested-small",
+      "bytes": 3575,
+      "impl": "ours wasm (JS value -> GCF)",
+      "medianMs": 0.03780816981150496,
+      "p90Ms": 0.040253207547137654,
+      "samples": 400,
+      "mbps": 94.55628288339241
+    },
+    {
+      "operation": "encode",
+      "payload": "nested-small",
+      "bytes": 3575,
+      "impl": "ours wasm (JSON text -> GCF)",
+      "medianMs": 0.028653304347771802,
+      "p90Ms": 0.029792579710044884,
+      "samples": 400,
+      "mbps": 124.76745985766233
+    },
+    {
+      "operation": "encode",
+      "payload": "keyed-small",
+      "bytes": 3137,
+      "impl": "blackwell-ts (JS value -> GCF)",
+      "medianMs": 0.03310579661022422,
+      "p90Ms": 0.0373451355931061,
+      "samples": 400,
+      "mbps": 94.7568196873168
+    },
+    {
+      "operation": "encode",
+      "payload": "keyed-small",
+      "bytes": 3137,
+      "impl": "ours wasm (JS value -> GCF)",
+      "medianMs": 0.04061308163259777,
+      "p90Ms": 0.042385367346970286,
+      "samples": 400,
+      "mbps": 77.24112216793989
+    },
+    {
+      "operation": "encode",
+      "payload": "keyed-small",
+      "bytes": 3137,
+      "impl": "ours wasm (JSON text -> GCF)",
+      "medianMs": 0.02138241176469498,
+      "p90Ms": 0.02256803529402104,
+      "samples": 400,
+      "mbps": 146.70936256028781
+    },
+    {
+      "operation": "encode",
+      "payload": "mixed-small",
+      "bytes": 671,
+      "impl": "blackwell-ts (JS value -> GCF)",
+      "medianMs": 0.010282306930688233,
+      "p90Ms": 0.011180069306917203,
+      "samples": 400,
+      "mbps": 65.25772907997481
+    },
+    {
+      "operation": "encode",
+      "payload": "mixed-small",
+      "bytes": 671,
+      "impl": "ours wasm (JS value -> GCF)",
+      "medianMs": 0.00969676190481223,
+      "p90Ms": 0.010387031746047017,
+      "samples": 400,
+      "mbps": 69.1983578215942
+    },
+    {
+      "operation": "encode",
+      "payload": "mixed-small",
+      "bytes": 671,
+      "impl": "ours wasm (JSON text -> GCF)",
+      "medianMs": 0.007247269784195412,
+      "p90Ms": 0.0075832805755420875,
+      "samples": 400,
+      "mbps": 92.58659053417507
+    },
+    {
+      "operation": "encode",
+      "payload": "quoted-small",
+      "bytes": 2516,
+      "impl": "blackwell-ts (JS value -> GCF)",
+      "medianMs": 0.03085198214284901,
+      "p90Ms": 0.03393726785699463,
+      "samples": 400,
+      "mbps": 81.5506760100718
+    },
+    {
+      "operation": "encode",
+      "payload": "quoted-small",
+      "bytes": 2516,
+      "impl": "ours wasm (JS value -> GCF)",
+      "medianMs": 0.02504825974019341,
+      "p90Ms": 0.025852454545402706,
+      "samples": 400,
+      "mbps": 100.44609989262962
+    },
+    {
+      "operation": "encode",
+      "payload": "quoted-small",
+      "bytes": 2516,
+      "impl": "ours wasm (JSON text -> GCF)",
+      "medianMs": 0.017642973451380644,
+      "p90Ms": 0.017868893805286532,
+      "samples": 400,
+      "mbps": 142.60634733331253
+    },
+    {
+      "operation": "encode",
+      "payload": "graph-small",
+      "bytes": 7408,
+      "impl": "blackwell-ts (JS value -> GCF)",
+      "medianMs": 0.015914316239376735,
+      "p90Ms": 0.017471837606947694,
+      "samples": 400,
+      "mbps": 465.49282347867467
+    },
+    {
+      "operation": "encode",
+      "payload": "graph-small",
+      "bytes": 7408,
+      "impl": "ours wasm (JS value -> GCF)",
+      "medianMs": 0.02849069565211497,
+      "p90Ms": 0.0291642463766882,
+      "samples": 400,
+      "mbps": 260.0147111343024
+    },
+    {
+      "operation": "encode",
+      "payload": "tabular-large",
+      "bytes": 3103306,
+      "impl": "blackwell-ts (JS value -> GCF)",
+      "medianMs": 24.448102000009385,
+      "p90Ms": 26.059524999989662,
+      "samples": 61,
+      "mbps": 126.93443441944117
+    },
+    {
+      "operation": "encode",
+      "payload": "tabular-large",
+      "bytes": 3103306,
+      "impl": "ours wasm (JS value -> GCF)",
+      "medianMs": 28.516256000002613,
+      "p90Ms": 29.263781999994535,
+      "samples": 52,
+      "mbps": 108.8258570830517
+    },
+    {
+      "operation": "encode",
+      "payload": "tabular-large",
+      "bytes": 3103306,
+      "impl": "ours wasm (JSON text -> GCF)",
+      "medianMs": 15.266714999990654,
+      "p90Ms": 15.668070999992779,
+      "samples": 96,
+      "mbps": 203.2726752285544
+    },
+    {
+      "operation": "encode",
+      "payload": "nested-large",
+      "bytes": 1500396,
+      "impl": "blackwell-ts (JS value -> GCF)",
+      "medianMs": 20.30138000000443,
+      "p90Ms": 22.492971999992733,
+      "samples": 75,
+      "mbps": 73.90610884578649
+    },
+    {
+      "operation": "encode",
+      "payload": "nested-large",
+      "bytes": 1500396,
+      "impl": "ours wasm (JS value -> GCF)",
+      "medianMs": 18.84000599999854,
+      "p90Ms": 19.952384999996866,
+      "samples": 79,
+      "mbps": 79.63882814050677
+    },
+    {
+      "operation": "encode",
+      "payload": "nested-large",
+      "bytes": 1500396,
+      "impl": "ours wasm (JSON text -> GCF)",
+      "medianMs": 12.066792000012356,
+      "p90Ms": 12.265008999995189,
+      "samples": 124,
+      "mbps": 124.34091844779157
+    },
+    {
+      "operation": "encode",
+      "payload": "keyed-large",
+      "bytes": 1282274,
+      "impl": "blackwell-ts (JS value -> GCF)",
+      "medianMs": 15.407222999987425,
+      "p90Ms": 16.998567000002367,
+      "samples": 97,
+      "mbps": 83.22551052847398
+    },
+    {
+      "operation": "encode",
+      "payload": "keyed-large",
+      "bytes": 1282274,
+      "impl": "ours wasm (JS value -> GCF)",
+      "medianMs": 16.330046000002767,
+      "p90Ms": 16.81864399999904,
+      "samples": 92,
+      "mbps": 78.52237525845197
+    },
+    {
+      "operation": "encode",
+      "payload": "keyed-large",
+      "bytes": 1282274,
+      "impl": "ours wasm (JSON text -> GCF)",
+      "medianMs": 8.334258000002592,
+      "p90Ms": 8.534207999997307,
+      "samples": 179,
+      "mbps": 153.85580815947876
+    },
+    {
+      "operation": "encode",
+      "payload": "mixed-large",
+      "bytes": 222589,
+      "impl": "blackwell-ts (JS value -> GCF)",
+      "medianMs": 3.238113000013982,
+      "p90Ms": 5.048079000000143,
+      "samples": 400,
+      "mbps": 68.74034352693648
+    },
+    {
+      "operation": "encode",
+      "payload": "mixed-large",
+      "bytes": 222589,
+      "impl": "ours wasm (JS value -> GCF)",
+      "medianMs": 2.774617999995826,
+      "p90Ms": 2.8351180000026943,
+      "samples": 400,
+      "mbps": 80.22329560333526
+    },
+    {
+      "operation": "encode",
+      "payload": "mixed-large",
+      "bytes": 222589,
+      "impl": "ours wasm (JSON text -> GCF)",
+      "medianMs": 2.0341909999988275,
+      "p90Ms": 2.105681999993976,
+      "samples": 400,
+      "mbps": 109.42384466361727
+    },
+    {
+      "operation": "encode",
+      "payload": "quoted-large",
+      "bytes": 1075982,
+      "impl": "blackwell-ts (JS value -> GCF)",
+      "medianMs": 11.710194999992382,
+      "p90Ms": 13.393522999991546,
+      "samples": 125,
+      "mbps": 91.8842085892421
+    },
+    {
+      "operation": "encode",
+      "payload": "quoted-large",
+      "bytes": 1075982,
+      "impl": "ours wasm (JS value -> GCF)",
+      "medianMs": 11.702831999995396,
+      "p90Ms": 12.269005000009201,
+      "samples": 127,
+      "mbps": 91.94201882077974
+    },
+    {
+      "operation": "encode",
+      "payload": "quoted-large",
+      "bytes": 1075982,
+      "impl": "ours wasm (JSON text -> GCF)",
+      "medianMs": 7.311478999996325,
+      "p90Ms": 7.510605000003125,
+      "samples": 205,
+      "mbps": 147.16338513733552
+    },
+    {
+      "operation": "encode",
+      "payload": "graph-large",
+      "bytes": 3056380,
+      "impl": "blackwell-ts (JS value -> GCF)",
+      "medianMs": 11.316168000004836,
+      "p90Ms": 12.428985999998986,
+      "samples": 130,
+      "mbps": 270.0896628610227
+    },
+    {
+      "operation": "encode",
+      "payload": "graph-large",
+      "bytes": 3056380,
+      "impl": "ours wasm (JS value -> GCF)",
+      "medianMs": 16.13302599999588,
+      "p90Ms": 17.2423060000001,
+      "samples": 91,
+      "mbps": 189.44865024086494
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "tabular-small",
+      "bytes": 7379,
+      "impl": "blackwell-ts encode (bytes -> bytes)",
+      "medianMs": 0.08461200000032398,
+      "p90Ms": 0.09363326086958809,
+      "samples": 400,
+      "mbps": 87.20985203011092
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "tabular-small",
+      "bytes": 7379,
+      "impl": "ours encodeJsonBytes",
+      "medianMs": 0.03889180000017708,
+      "p90Ms": 0.04021755555554086,
+      "samples": 400,
+      "mbps": 189.73151152598757
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "tabular-small",
+      "bytes": 3016,
+      "impl": "blackwell-ts decode (bytes -> JSON bytes)",
+      "medianMs": 0.18492330000008222,
+      "p90Ms": 0.2134529000002658,
+      "samples": 400,
+      "mbps": 16.309464518525566
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "tabular-small",
+      "bytes": 3016,
+      "impl": "ours decodeToJsonBytes",
+      "medianMs": 0.03684051851855151,
+      "p90Ms": 0.038310796296206755,
+      "samples": 400,
+      "mbps": 81.86638302827511
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "nested-small",
+      "bytes": 3575,
+      "impl": "blackwell-ts encode (bytes -> bytes)",
+      "medianMs": 0.07071430769204969,
+      "p90Ms": 0.07865684615367521,
+      "samples": 400,
+      "mbps": 50.55553984306252
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "nested-small",
+      "bytes": 3575,
+      "impl": "ours encodeJsonBytes",
+      "medianMs": 0.029897863636230766,
+      "p90Ms": 0.031490863635994945,
+      "samples": 400,
+      "mbps": 119.57376097159501
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "nested-small",
+      "bytes": 2147,
+      "impl": "blackwell-ts decode (bytes -> JSON bytes)",
+      "medianMs": 0.13841761538508132,
+      "p90Ms": 0.2824276153831026,
+      "samples": 400,
+      "mbps": 15.511031554957738
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "nested-small",
+      "bytes": 2147,
+      "impl": "ours decodeToJsonBytes",
+      "medianMs": 0.029266485293834087,
+      "p90Ms": 0.030383352940963747,
+      "samples": 400,
+      "mbps": 73.36036351629602
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "keyed-small",
+      "bytes": 3137,
+      "impl": "blackwell-ts encode (bytes -> bytes)",
+      "medianMs": 0.04746102499993867,
+      "p90Ms": 0.04871382499986794,
+      "samples": 400,
+      "mbps": 66.09633904881014
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "keyed-small",
+      "bytes": 3137,
+      "impl": "ours encodeJsonBytes",
+      "medianMs": 0.02210929670312268,
+      "p90Ms": 0.022350648351545845,
+      "samples": 400,
+      "mbps": 141.8860148345169
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "keyed-small",
+      "bytes": 1315,
+      "impl": "blackwell-ts decode (bytes -> JSON bytes)",
+      "medianMs": 0.11477312500028347,
+      "p90Ms": 0.18001043749973178,
+      "samples": 400,
+      "mbps": 11.457386038732954
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "keyed-small",
+      "bytes": 1315,
+      "impl": "ours decodeToJsonBytes",
+      "medianMs": 0.02247560674159819,
+      "p90Ms": 0.022886820224812254,
+      "samples": 400,
+      "mbps": 58.50787545442225
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "mixed-small",
+      "bytes": 671,
+      "impl": "blackwell-ts encode (bytes -> bytes)",
+      "medianMs": 0.01545806400012225,
+      "p90Ms": 0.017097680000122635,
+      "samples": 400,
+      "mbps": 43.40776438722815
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "mixed-small",
+      "bytes": 671,
+      "impl": "ours encodeJsonBytes",
+      "medianMs": 0.007142677536214013,
+      "p90Ms": 0.007251956521729986,
+      "samples": 400,
+      "mbps": 93.9423621741245
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "mixed-small",
+      "bytes": 786,
+      "impl": "blackwell-ts decode (bytes -> JSON bytes)",
+      "medianMs": 0.03483482142837602,
+      "p90Ms": 0.036777321428546984,
+      "samples": 400,
+      "mbps": 22.56362937344453
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "mixed-small",
+      "bytes": 786,
+      "impl": "ours decodeToJsonBytes",
+      "medianMs": 0.007202326693243729,
+      "p90Ms": 0.0075995976096520056,
+      "samples": 400,
+      "mbps": 109.13140065380834
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "quoted-small",
+      "bytes": 2516,
+      "impl": "blackwell-ts encode (bytes -> bytes)",
+      "medianMs": 0.04317069565181357,
+      "p90Ms": 0.045153108695597875,
+      "samples": 400,
+      "mbps": 58.280274663452275
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "quoted-small",
+      "bytes": 2516,
+      "impl": "ours encodeJsonBytes",
+      "medianMs": 0.017297086956323652,
+      "p90Ms": 0.018240486956505184,
+      "samples": 400,
+      "mbps": 145.45801881860658
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "quoted-small",
+      "bytes": 1578,
+      "impl": "blackwell-ts decode (bytes -> JSON bytes)",
+      "medianMs": 0.08565390476169774,
+      "p90Ms": 0.16653638095262327,
+      "samples": 400,
+      "mbps": 18.422977964521728
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "quoted-small",
+      "bytes": 1578,
+      "impl": "ours decodeToJsonBytes",
+      "medianMs": 0.019100339805766108,
+      "p90Ms": 0.019450873786411745,
+      "samples": 400,
+      "mbps": 82.61633123006668
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "graph-small",
+      "bytes": 7408,
+      "impl": "blackwell-ts encode (bytes -> bytes)",
+      "medianMs": 0.04318004444422614,
+      "p90Ms": 0.04437026666645478,
+      "samples": 400,
+      "mbps": 171.5607312440033
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "graph-small",
+      "bytes": 7408,
+      "impl": "ours encodeJsonBytes",
+      "medianMs": 0.020095747474856165,
+      "p90Ms": 0.02042834343438065,
+      "samples": 400,
+      "mbps": 368.63520549653117
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "graph-small",
+      "bytes": 2281,
+      "impl": "blackwell-ts decode (bytes -> JSON bytes)",
+      "medianMs": 0.0532299062497259,
+      "p90Ms": 0.06971284375049436,
+      "samples": 400,
+      "mbps": 42.85185078663831
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "graph-small",
+      "bytes": 2281,
+      "impl": "ours decodeToJsonBytes",
+      "medianMs": 0.02219630120474991,
+      "p90Ms": 0.022932915662552778,
+      "samples": 400,
+      "mbps": 102.76486964917724
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "tabular-large",
+      "bytes": 3103306,
+      "impl": "blackwell-ts encode (bytes -> bytes)",
+      "medianMs": 36.930397999996785,
+      "p90Ms": 41.60831599999801,
+      "samples": 40,
+      "mbps": 84.03120919520744
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "tabular-large",
+      "bytes": 3103306,
+      "impl": "ours encodeJsonBytes",
+      "medianMs": 15.19043600000441,
+      "p90Ms": 15.680996999988565,
+      "samples": 98,
+      "mbps": 204.29341198627208
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "tabular-large",
+      "bytes": 1323396,
+      "impl": "blackwell-ts decode (bytes -> JSON bytes)",
+      "medianMs": 88.58123400001205,
+      "p90Ms": 97.10453799998504,
+      "samples": 17,
+      "mbps": 14.939913797089575
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "tabular-large",
+      "bytes": 1323396,
+      "impl": "ours decodeToJsonBytes",
+      "medianMs": 14.690883999981452,
+      "p90Ms": 15.821576999995159,
+      "samples": 97,
+      "mbps": 90.0828023692564
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "nested-large",
+      "bytes": 1500396,
+      "impl": "blackwell-ts encode (bytes -> bytes)",
+      "medianMs": 30.490483000001404,
+      "p90Ms": 35.17040599999018,
+      "samples": 48,
+      "mbps": 49.208666192658576
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "nested-large",
+      "bytes": 1500396,
+      "impl": "ours encodeJsonBytes",
+      "medianMs": 11.803272999997716,
+      "p90Ms": 12.028617000003578,
+      "samples": 126,
+      "mbps": 127.11694459666317
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "nested-large",
+      "bytes": 888939,
+      "impl": "blackwell-ts decode (bytes -> JSON bytes)",
+      "medianMs": 63.08047899999656,
+      "p90Ms": 76.68912699999055,
+      "samples": 23,
+      "mbps": 14.09214093000227
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "nested-large",
+      "bytes": 888939,
+      "impl": "ours decodeToJsonBytes",
+      "medianMs": 12.235076000011759,
+      "p90Ms": 12.591239000001224,
+      "samples": 120,
+      "mbps": 72.65496348360612
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "keyed-large",
+      "bytes": 1282274,
+      "impl": "blackwell-ts encode (bytes -> bytes)",
+      "medianMs": 25.90607599998475,
+      "p90Ms": 30.076241000002483,
+      "samples": 57,
+      "mbps": 49.49703691136993
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "keyed-large",
+      "bytes": 1282274,
+      "impl": "ours encodeJsonBytes",
+      "medianMs": 8.30016899999464,
+      "p90Ms": 8.464172000007238,
+      "samples": 178,
+      "mbps": 154.48769778071122
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "keyed-large",
+      "bytes": 530335,
+      "impl": "blackwell-ts decode (bytes -> JSON bytes)",
+      "medianMs": 56.01720800000476,
+      "p90Ms": 63.18823999998858,
+      "samples": 27,
+      "mbps": 9.4673586730698
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "keyed-large",
+      "bytes": 530335,
+      "impl": "ours decodeToJsonBytes",
+      "medianMs": 8.562812999996822,
+      "p90Ms": 8.756389999995008,
+      "samples": 172,
+      "mbps": 61.934670300542216
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "mixed-large",
+      "bytes": 222589,
+      "impl": "blackwell-ts encode (bytes -> bytes)",
+      "medianMs": 5.530484999995679,
+      "p90Ms": 7.25973800002248,
+      "samples": 252,
+      "mbps": 40.24764555010527
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "mixed-large",
+      "bytes": 222589,
+      "impl": "ours encodeJsonBytes",
+      "medianMs": 2.0585250000003725,
+      "p90Ms": 2.1024800000013784,
+      "samples": 400,
+      "mbps": 108.13033604156361
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "mixed-large",
+      "bytes": 263525,
+      "impl": "blackwell-ts decode (bytes -> JSON bytes)",
+      "medianMs": 11.012672999990173,
+      "p90Ms": 12.538079999998445,
+      "samples": 129,
+      "mbps": 23.92924951101655
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "mixed-large",
+      "bytes": 263525,
+      "impl": "ours decodeToJsonBytes",
+      "medianMs": 2.0459090000076685,
+      "p90Ms": 2.067583000025479,
+      "samples": 400,
+      "mbps": 128.80582665163126
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "quoted-large",
+      "bytes": 1075982,
+      "impl": "blackwell-ts encode (bytes -> bytes)",
+      "medianMs": 18.765559000021312,
+      "p90Ms": 20.992327000014484,
+      "samples": 78,
+      "mbps": 57.33812672453711
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "quoted-large",
+      "bytes": 1075982,
+      "impl": "ours encodeJsonBytes",
+      "medianMs": 6.5122820000106,
+      "p90Ms": 6.733368999994127,
+      "samples": 225,
+      "mbps": 165.22349615668494
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "quoted-large",
+      "bytes": 684025,
+      "impl": "blackwell-ts decode (bytes -> JSON bytes)",
+      "medianMs": 40.88050299999304,
+      "p90Ms": 50.11907700001029,
+      "samples": 35,
+      "mbps": 16.73230390536331
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "quoted-large",
+      "bytes": 684025,
+      "impl": "ours decodeToJsonBytes",
+      "medianMs": 7.54056400002446,
+      "p90Ms": 7.772136999992654,
+      "samples": 192,
+      "mbps": 90.71271061392505
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "graph-large",
+      "bytes": 3056380,
+      "impl": "blackwell-ts encode (bytes -> bytes)",
+      "medianMs": 25.177026999997906,
+      "p90Ms": 26.802836000017123,
+      "samples": 59,
+      "mbps": 121.39558812882292
+    },
+    {
+      "operation": "bytes-encode",
+      "payload": "graph-large",
+      "bytes": 3056380,
+      "impl": "ours encodeJsonBytes",
+      "medianMs": 10.381217999994988,
+      "p90Ms": 10.91410399999586,
+      "samples": 141,
+      "mbps": 294.4143933786455
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "graph-large",
+      "bytes": 969609,
+      "impl": "blackwell-ts decode (bytes -> JSON bytes)",
+      "medianMs": 27.214025000022957,
+      "p90Ms": 34.77444100001594,
+      "samples": 54,
+      "mbps": 35.62901849319173
+    },
+    {
+      "operation": "bytes-decode",
+      "payload": "graph-large",
+      "bytes": 969609,
+      "impl": "ours decodeToJsonBytes",
+      "medianMs": 9.266809000022477,
+      "p90Ms": 9.501508999994257,
+      "samples": 154,
+      "mbps": 104.63245762350863
+    },
+    {
+      "operation": "lazy",
+      "payload": "tabular-large",
+      "access": "sum one field of every row",
+      "impl": "blackwell-ts decode + read",
+      "medianMs": 53.1422779999848,
+      "p90Ms": 69.36786399999983,
+      "samples": 27
+    },
+    {
+      "operation": "lazy",
+      "payload": "tabular-large",
+      "access": "sum one field of every row",
+      "impl": "ours decode + read",
+      "medianMs": 24.28256700001657,
+      "p90Ms": 25.17298600001959,
+      "samples": 60
+    },
+    {
+      "operation": "lazy",
+      "payload": "tabular-large",
+      "access": "sum one field of every row",
+      "impl": "ours decodeLazy + read",
+      "medianMs": 22.22404900001129,
+      "p90Ms": 41.39376999999513,
+      "samples": 42
+    },
+    {
+      "operation": "lazy",
+      "payload": "tabular-large",
+      "access": "read the first row only",
+      "impl": "blackwell-ts decode + read",
+      "medianMs": 51.30675600000541,
+      "p90Ms": 63.961530000000494,
+      "samples": 29
+    },
+    {
+      "operation": "lazy",
+      "payload": "tabular-large",
+      "access": "read the first row only",
+      "impl": "ours decode + read",
+      "medianMs": 24.069078000000445,
+      "p90Ms": 25.084885999996914,
+      "samples": 60
+    },
+    {
+      "operation": "lazy",
+      "payload": "tabular-large",
+      "access": "read the first row only",
+      "impl": "ours decodeLazy + read",
+      "medianMs": 12.47832099997322,
+      "p90Ms": 13.101380000007339,
+      "samples": 114
+    },
+    {
+      "operation": "lazy",
+      "payload": "nested-large",
+      "access": "count gold customers",
+      "impl": "blackwell-ts decode + read",
+      "medianMs": 39.51546699999017,
+      "p90Ms": 49.35732399998233,
+      "samples": 37
+    },
+    {
+      "operation": "lazy",
+      "payload": "nested-large",
+      "access": "count gold customers",
+      "impl": "ours decode + read",
+      "medianMs": 20.972004999988712,
+      "p90Ms": 23.722475999995368,
+      "samples": 69
+    },
+    {
+      "operation": "lazy",
+      "payload": "nested-large",
+      "access": "count gold customers",
+      "impl": "ours decodeLazy + read",
+      "medianMs": 16.79583100002492,
+      "p90Ms": 30.836356000014348,
+      "samples": 61
+    },
+    {
+      "operation": "lazy",
+      "payload": "graph-large",
+      "access": "sum one field of every symbol",
+      "impl": "blackwell-ts decode + read",
+      "medianMs": 10.658301999996183,
+      "p90Ms": 14.079882000020007,
+      "samples": 128
+    },
+    {
+      "operation": "lazy",
+      "payload": "graph-large",
+      "access": "sum one field of every symbol",
+      "impl": "ours decode + read",
+      "medianMs": 6.705518000002485,
+      "p90Ms": 7.289646999997785,
+      "samples": 208
+    },
+    {
+      "operation": "lazy",
+      "payload": "graph-large",
+      "access": "sum one field of every symbol",
+      "impl": "ours decodeLazy + read",
+      "medianMs": 13.458929999993416,
+      "p90Ms": 14.321970000019064,
+      "samples": 81
+    },
+    {
+      "operation": "lazy",
+      "payload": "graph-large",
+      "access": "read the first symbol only",
+      "impl": "blackwell-ts decode + read",
+      "medianMs": 11.189631000015652,
+      "p90Ms": 14.588120000000345,
+      "samples": 124
+    },
+    {
+      "operation": "lazy",
+      "payload": "graph-large",
+      "access": "read the first symbol only",
+      "impl": "ours decode + read",
+      "medianMs": 6.610951000009663,
+      "p90Ms": 7.741162999998778,
+      "samples": 210
+    },
+    {
+      "operation": "lazy",
+      "payload": "graph-large",
+      "access": "read the first symbol only",
+      "impl": "ours decodeLazy + read",
+      "medianMs": 8.751852999994298,
+      "p90Ms": 9.27471900000819,
+      "samples": 159
+    }
+  ]
+}

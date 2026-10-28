@@ -1,0 +1,31 @@
+gcf-wasm / @felixdrp/gcf-wasm
+Copyright 2026 felixdrp
+
+This product is an independent implementation of the Graph Compact Format
+(GCF) specification created by Dayna Blackwell / Blackwell Systems
+(https://github.com/blackwell-systems/gcf). It is not affiliated with or
+endorsed by Blackwell Systems. "GCF" and "Graph Compact Format" refer to
+that specification.
+
+Portions of this product are adapted from gcf-typescript
+(https://github.com/blackwell-systems/gcf-typescript), licensed under the
+Apache License, Version 2.0, and modified:
+  * src/host.ts: the scalar quoting rules, canonical number and score
+    formatting, and the streaming encoders;
+  * src/wat/09_encoder.wat, src/wat/13_graph_enc.wat, src/wat/14_delta_enc.wat:
+    the canonical encoding algorithms (layout selection, flattening,
+    inline/shared schemas, constant columns, graph, session and delta
+    encoding), reimplemented in WebAssembly text after their Zig version in
+    gcf-zig (https://codeberg.org/felixdrp/gcf-zig).
+
+gcf-typescript carries the following notice:
+
+  gcf-typescript
+  Copyright 2026 Dayna Blackwell / Blackwell Systems
+
+  This product includes software developed by Dayna Blackwell / Blackwell
+  Systems (https://github.com/blackwell-systems).
+
+The conformance fixtures used by the test suite are not distributed with
+this product; they are fetched from https://github.com/blackwell-systems/gcf
+at test time.

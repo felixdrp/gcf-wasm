@@ -1,0 +1,3 @@
+[test]
+# Only our harness; never the vendored upstream repositories under bench/vendor or vendor/.
+root = "test"

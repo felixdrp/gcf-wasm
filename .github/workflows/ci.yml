@@ -1,0 +1,52 @@
+# SPDX-License-Identifier: Apache-2.0
+# CI: the full test suite on Bun and Node, the byte-for-byte comparison with
+# the Zig reference build (reference/gcf-zig submodule), and the npm package
+# build + install smoke test.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  # Conformance fixtures, pinned to the spec commit this release was tested with.
+  GCF_SPEC_REPO: https://github.com/blackwell-systems/gcf.git
+  GCF_SPEC_COMMIT: c2877f4795f9473f9a65fe52678cbea148876ca5
+  # The differential tests must run in CI, never be skipped.
+  GCF_REQUIRE_ORACLE: "1"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: mlugg/setup-zig@v2
+        with:
+          version: 0.17.0
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Fetch conformance fixtures
+        run: |
+          git clone --filter=blob:none "$GCF_SPEC_REPO" vendor/gcf
+          git -C vendor/gcf checkout "$GCF_SPEC_COMMIT"
+      - run: bun install --frozen-lockfile
+      # Shared CI runners are noisy: report the FUTURE_OPTION A thresholds
+      # instead of failing on them.
+      - run: bun run test
+        env:
+          GCF_PERF_ASSERT: "0"
+      - run: bun run test:oracle
+      - name: Build and pack the npm package
+        run: bun run pack:npm
+      - name: Install the tarball and smoke-test it with Node
+        run: |
+          mkdir -p /tmp/smoke/node_modules/@felixdrp/gcf-wasm
+          tar -xzf npm/*.tgz -C /tmp/smoke/node_modules/@felixdrp/gcf-wasm --strip-components=1
+          cd /tmp/smoke
+          node --input-type=module -e 'import { init } from "@felixdrp/gcf-wasm"; const g = await init(); const t = g.encode({ a: [1, 2] }); if (JSON.stringify(g.decode(t)) !== "{\"a\":[1,2]}") process.exit(1); console.log(t);'
+          echo '{"k":[1,2,3]}' | node node_modules/@felixdrp/gcf-wasm/dist/cli.js encode

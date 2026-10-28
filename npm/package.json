@@ -1,0 +1,23 @@
+{
+  "name": "@felixdrp/gcf-wasm",
+  "version": "0.1.0",
+  "description": "Fast, strict codec for the Graph Compact Format (GCF v3.6.0): an 88 KB WebAssembly SIMD engine written by hand in WAT, with a zero-dependency JS API for Node, Bun, Deno, browsers and edge runtimes.",
+  "keywords": ["gcf", "graph-compact-format", "llm", "tokens", "token-efficient", "serialization", "json-alternative", "mcp", "webassembly", "wasm", "simd", "wat"],
+  "license": "Apache-2.0",
+  "author": "felixdrp (https://github.com/felixdrp)",
+  "homepage": "https://github.com/felixdrp/gcf-wasm#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/felixdrp/gcf-wasm.git", "directory": "npm" },
+  "bugs": { "url": "https://github.com/felixdrp/gcf-wasm/issues" },
+  "type": "module",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./gcf.wasm": "./dist/gcf.wasm",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": { "gcf": "dist/cli.js" },
+  "files": ["dist", "README.md", "LICENSE", "NOTICE"],
+  "sideEffects": false,
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "gcf-wasm",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Development workspace for gcf-wasm (the hand-written WebAssembly GCF codec and the @felixdrp/gcf-wasm npm package). Not published itself.",
+  "type": "module",
+  "scripts": {
+    "//": "Comments use \"//<script>\" keys (plain JSON: works with Bun, Node and npm). Requires bun; bench:node and test:perf also run node. The differential tests against the Zig reference need the reference/gcf-zig submodule (git submodule update --init) and zig 0.17+.",
+    "//build": "Compile dist/gcf.wasm (the codec, src/wat/*.wat, without debug names: what npm and releases ship), dist/gcf.debug.wasm (the same with function names), dist/gcf_simd.wasm + dist/gcf_simd.relaxed.wasm (structural indexer, src/gcf_simd.wat) via wabt, and dist/gcf_zig.wasm (the Zig reference build from reference/gcf-zig; skipped with a notice when the submodule or zig is missing, an error with GCF_REQUIRE_ORACLE=1).",
+    "build": "bun scripts/build.ts",
+    "//build:npm": "Build the npm package (@felixdrp/gcf-wasm) into npm/: bundled JS, CLI, type declarations, dist/gcf.wasm, LICENSE, NOTICE.",
+    "build:npm": "bun scripts/build.ts && bun scripts/build-npm.ts",
+    "//pack:npm": "Build and pack the npm package into npm/*.tgz without publishing (inspect before `npm publish --access public`).",
+    "pack:npm": "bun run build:npm && cd npm && bun pm pack",
+    "//test": "Build, then run every test in test/ against dist/gcf.wasm: conformance fixtures, encoder properties, bytes API and lazy decoding, tutorial sync, FUTURE_OPTION A performance thresholds in Bun/JSC and Node/V8, and the byte-for-byte differential tests against the Zig reference (skipped without dist/gcf_zig.wasm). Performance thresholds assume an otherwise idle machine.",
+    "test": "bun scripts/build.ts && bun test",
+    "//test:conformance": "Build, then run only the Blackwell conformance suite, SIMD cross-checks, host API and robustness tests.",
+    "test:conformance": "bun scripts/build.ts && bun test test/gcf_compliance.test.ts",
+    "//test:encoder": "Build, then run the encoder property tests (round trips, JS vs wasm quoting, largeInt, streaming, deltas).",
+    "test:encoder": "bun scripts/build.ts && bun test test/gcf_encoder.test.ts",
+    "//test:boundary": "Build, then run the bytes-in/bytes-out API and lazy-decoding tests (docs/JS_WASM_BOUNDARY.md).",
+    "test:boundary": "bun scripts/build.ts && bun test test/gcf_boundary.test.ts",
+    "//test:perf": "Build, then run only the performance thresholds (>= 1.5 GB/s, <= 3 cycles/block, < 2% jitter). GCF_PERF_ASSERT=0 makes it report-only.",
+    "test:perf": "bun scripts/build.ts && bun test test/gcf_performance.test.ts",
+    "//test:oracle": "Build (the Zig reference is required), then compare the codec with the Zig reference build: byte-for-byte differential tests of every export (test/gcf_wat.test.ts), and the conformance, encoder and boundary suites run against dist/gcf_zig.wasm as well (GCF_WASM=gcf_zig.wasm).",
+    "test:oracle": "GCF_REQUIRE_ORACLE=1 bun scripts/build.ts && GCF_REQUIRE_ORACLE=1 bun test test/gcf_wat.test.ts && GCF_WASM=gcf_zig.wasm bun test test/gcf_compliance.test.ts test/gcf_encoder.test.ts test/gcf_boundary.test.ts",
+    "//tutorial": "Regenerate the example blocks of docs/TUTORIAL.md from examples/*.ts and their real output (--check verifies instead).",
+    "tutorial": "bun scripts/build.ts && bun scripts/tutorial.ts",
+    "//gcf": "Command-line codec: bun run gcf -- encode|decode|stats [file].",
+    "gcf": "bun bin/gcf.ts",
+    "//bench": "Build, then benchmark against the Blackwell TypeScript SDK under Bun (JavaScriptCore): decoding, encoding, bytes-to-bytes pipelines and lazy access. Results: bench/results/bun.json (GCF_WASM=gcf_zig.wasm: the Zig reference, bench/results/bun-zig.json).",
+    "bench": "bun scripts/build.ts && bun bench/run.ts",
+    "//bench:node": "Same benchmark under Node (V8): bundles bench/run.ts with Bun into bench/dist/run.mjs, then runs it with node. Results: bench/results/node.json.",
+    "bench:node": "bun scripts/build.ts && bun build bench/run.ts --target=node --format=esm --outfile=bench/dist/run.mjs && node bench/dist/run.mjs",
+    "//bench:wat": "Build, then compare the codec with the Zig reference build (speed under Bun and Node, binary size; also the equal-scope Zig builds from `zig build wasm-generic`). Needs the submodule and zig. Results: bench/results/wat-vs-zig-*.json, summary in docs/WAT_CODEC.md.",
+    "bench:wat": "GCF_REQUIRE_ORACLE=1 bun scripts/build.ts && (cd reference/gcf-zig && zig build wasm-generic) && bun bench/wat_vs_zig.ts && bun build bench/wat_vs_zig.ts --target=node --format=esm --outfile=bench/dist/wat_vs_zig.mjs && node bench/dist/wat_vs_zig.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.1",
+    "typescript": "5.9.3",
+    "wabt": "1.0.39"
+  },
+  "bin": {
+    "gcf": "bin/gcf.ts"
+  },
+  "license": "Apache-2.0"
+}

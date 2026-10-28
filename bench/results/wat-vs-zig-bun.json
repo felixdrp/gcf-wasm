@@ -1,0 +1,663 @@
+{
+  "runtime": "bun",
+  "engine": "JavaScriptCore",
+  "date": "2026-10-12T22:07:55.852Z",
+  "binary": {
+    "zig": {
+      "bytes": 511294,
+      "gzip": 166960
+    },
+    "wat": {
+      "bytes": 104985,
+      "gzip": 60473
+    },
+    "zigGeneric": {
+      "bytes": 237740,
+      "gzip": 88826
+    },
+    "zigGenericSmall": {
+      "bytes": 125104,
+      "gzip": 56905
+    }
+  },
+  "startup": {
+    "zig": {
+      "compileMs": 3.120839,
+      "instantiateMs": 0.1805210000000006
+    },
+    "wat": {
+      "compileMs": 0.9115809999999982,
+      "instantiateMs": 0.13158899999999818
+    }
+  },
+  "geomeanVsEqualScope": {
+    "decode (GCF -> JSON)": {
+      "releaseFast": 0.7435191212632736,
+      "releaseSmall": 0.5466979970044479
+    },
+    "decode tree only": {
+      "releaseFast": 0.8082011805721271,
+      "releaseSmall": 0.6158057682754463
+    },
+    "decode to tape": {
+      "releaseFast": null,
+      "releaseSmall": null
+    },
+    "encode (JSON -> GCF)": {
+      "releaseFast": 0.7349248014262774,
+      "releaseSmall": 0.5758774395495967
+    },
+    "parse JSON only": {
+      "releaseFast": 0.6789861749810786,
+      "releaseSmall": 0.5744426521372855
+    }
+  },
+  "geomean": {
+    "decode (GCF -> JSON)": {
+      "large": 0.7211038881848634,
+      "small": 0.7167777506400157
+    },
+    "decode tree only": {
+      "large": 0.7781064332573888,
+      "small": 0.7870424834301115
+    },
+    "decode to tape": {
+      "large": 0.6889782778302219,
+      "small": 0.6959554974230395
+    },
+    "encode (JSON -> GCF)": {
+      "large": 0.7181631573829725,
+      "small": 0.7501582239421047
+    },
+    "parse JSON only": {
+      "large": 0.6528655269078061,
+      "small": 0.6685635902869449
+    },
+    "decode graph columns": {
+      "large": 0.6792450502947633,
+      "small": 0.6898035894433203
+    },
+    "encode graph (JSON -> GCF)": {
+      "large": 0.8897675469135593,
+      "small": 0.7710378795554238
+    }
+  },
+  "rows": [
+    {
+      "payload": "graph-large",
+      "op": "decode (GCF -> JSON)",
+      "kb": 946.8837890625,
+      "zigMs": 6.510821421052631,
+      "watMs": 4.650458653846149,
+      "ratio": 0.7142660431153848
+    },
+    {
+      "payload": "graph-large",
+      "op": "decode tree only",
+      "kb": 946.8837890625,
+      "zigMs": 2.1610224285714303,
+      "watMs": 1.8116867014925393,
+      "ratio": 0.8383470146074219
+    },
+    {
+      "payload": "graph-large",
+      "op": "decode to tape",
+      "kb": 946.8837890625,
+      "zigMs": 6.691647944444463,
+      "watMs": 4.034364766666658,
+      "ratio": 0.6028955498198417
+    },
+    {
+      "payload": "graph-large",
+      "op": "decode graph columns",
+      "kb": 946.8837890625,
+      "zigMs": 3.8466191875000106,
+      "watMs": 2.6127970434782464,
+      "ratio": 0.6792450502947633
+    },
+    {
+      "payload": "graph-large",
+      "op": "encode graph (JSON -> GCF)",
+      "kb": 2984.74609375,
+      "zigMs": 9.735452769230855,
+      "watMs": 8.662289928571356,
+      "ratio": 0.8897675469135593
+    },
+    {
+      "payload": "graph-large",
+      "op": "parse JSON only",
+      "kb": 2984.74609375,
+      "zigMs": 3.8777464516128783,
+      "watMs": 2.3404875769230715,
+      "ratio": 0.6035690074449267
+    },
+    {
+      "payload": "graph-small",
+      "op": "decode (GCF -> JSON)",
+      "kb": 2.2275390625,
+      "zigMs": 0.016045511565717187,
+      "watMs": 0.011097308951359235,
+      "ratio": 0.6916145306996461
+    },
+    {
+      "payload": "graph-small",
+      "op": "decode tree only",
+      "kb": 2.2275390625,
+      "zigMs": 0.00550237145215277,
+      "watMs": 0.004657155508984384,
+      "ratio": 0.8463906062107638
+    },
+    {
+      "payload": "graph-small",
+      "op": "decode to tape",
+      "kb": 2.2275390625,
+      "zigMs": 0.016765132299524626,
+      "watMs": 0.009630077602118594,
+      "ratio": 0.5744110711486394
+    },
+    {
+      "payload": "graph-small",
+      "op": "decode graph columns",
+      "kb": 2.2275390625,
+      "zigMs": 0.010449105964301191,
+      "watMs": 0.007207830800648568,
+      "ratio": 0.6898035894433203
+    },
+    {
+      "payload": "graph-small",
+      "op": "encode graph (JSON -> GCF)",
+      "kb": 7.234375,
+      "zigMs": 0.018019250150150486,
+      "watMs": 0.013893524426950783,
+      "ratio": 0.7710378795554238
+    },
+    {
+      "payload": "graph-small",
+      "op": "parse JSON only",
+      "kb": 7.234375,
+      "zigMs": 0.009386820635169177,
+      "watMs": 0.0058565003172124834,
+      "ratio": 0.6239067033272372
+    },
+    {
+      "payload": "keyed-large",
+      "op": "decode (GCF -> JSON)",
+      "kb": 517.9052734375,
+      "zigMs": 7.133511529411728,
+      "watMs": 4.624574384615278,
+      "ratio": 0.6482886255314777,
+      "zigGenericMs": 6.798226722222251,
+      "zigSmallMs": 8.83988992857147
+    },
+    {
+      "payload": "keyed-large",
+      "op": "decode tree only",
+      "kb": 517.9052734375,
+      "zigMs": 4.430415500000111,
+      "watMs": 3.1129674358973998,
+      "ratio": 0.7026355509764992,
+      "zigGenericMs": 4.058086033333287,
+      "zigSmallMs": 5.065138124999976
+    },
+    {
+      "payload": "keyed-large",
+      "op": "decode to tape",
+      "kb": 517.9052734375,
+      "zigMs": 7.588112375000037,
+      "watMs": 5.068837749999754,
+      "ratio": 0.6679971908032963
+    },
+    {
+      "payload": "keyed-large",
+      "op": "encode (JSON -> GCF)",
+      "kb": 1252.220703125,
+      "zigMs": 7.850088437499835,
+      "watMs": 5.5603894090907655,
+      "ratio": 0.7083218811305121,
+      "zigGenericMs": 7.834171937500287,
+      "zigSmallMs": 8.976936499999804
+    },
+    {
+      "payload": "keyed-large",
+      "op": "parse JSON only",
+      "kb": 1252.220703125,
+      "zigMs": 3.694630272727271,
+      "watMs": 2.4788209795919176,
+      "ratio": 0.6709253150145718,
+      "zigGenericMs": 3.6793228484847615,
+      "zigSmallMs": 4.180754965517453
+    },
+    {
+      "payload": "keyed-small",
+      "op": "decode (GCF -> JSON)",
+      "kb": 1.2841796875,
+      "zigMs": 0.018412791193617734,
+      "watMs": 0.011642254753589492,
+      "ratio": 0.632291684143192,
+      "zigGenericMs": 0.01738113222302664,
+      "zigSmallMs": 0.02391028850368596
+    },
+    {
+      "payload": "keyed-small",
+      "op": "decode tree only",
+      "kb": 1.2841796875,
+      "zigMs": 0.011424412128713023,
+      "watMs": 0.00780411634258926,
+      "ratio": 0.6831087897271442,
+      "zigGenericMs": 0.010511109836208846,
+      "zigSmallMs": 0.014050551457674747
+    },
+    {
+      "payload": "keyed-small",
+      "op": "decode to tape",
+      "kb": 1.2841796875,
+      "zigMs": 0.018136941816533213,
+      "watMs": 0.01234704249408312,
+      "ratio": 0.6807676078459846
+    },
+    {
+      "payload": "keyed-small",
+      "op": "encode (JSON -> GCF)",
+      "kb": 3.0634765625,
+      "zigMs": 0.019670519586953955,
+      "watMs": 0.014147407520923897,
+      "ratio": 0.7192188014345517,
+      "zigGenericMs": 0.019795765918838592,
+      "zigSmallMs": 0.024118297427653444
+    },
+    {
+      "payload": "keyed-small",
+      "op": "parse JSON only",
+      "kb": 3.0634765625,
+      "zigMs": 0.009024181230260043,
+      "watMs": 0.005909656653206033,
+      "ratio": 0.6548690127575971,
+      "zigGenericMs": 0.008818559891240373,
+      "zigSmallMs": 0.010572724317180994
+    },
+    {
+      "payload": "mixed-large",
+      "op": "decode (GCF -> JSON)",
+      "kb": 257.3486328125,
+      "zigMs": 1.7520809275363032,
+      "watMs": 1.3781655340909227,
+      "ratio": 0.786587829609467,
+      "zigGenericMs": 1.7175301571428594,
+      "zigSmallMs": 2.408822579999978
+    },
+    {
+      "payload": "mixed-large",
+      "op": "decode tree only",
+      "kb": 257.3486328125,
+      "zigMs": 1.2836099468083975,
+      "watMs": 1.0281833846153867,
+      "ratio": 0.8010092062404859,
+      "zigGenericMs": 1.2386259896906942,
+      "zigSmallMs": 1.70578563380265
+    },
+    {
+      "payload": "mixed-large",
+      "op": "decode to tape",
+      "kb": 257.3486328125,
+      "zigMs": 1.8034562238806133,
+      "watMs": 1.352661056179662,
+      "ratio": 0.7500381979159182
+    },
+    {
+      "payload": "mixed-large",
+      "op": "encode (JSON -> GCF)",
+      "kb": 217.3720703125,
+      "zigMs": 1.9036235468749965,
+      "watMs": 1.2799237340425842,
+      "ratio": 0.6723617892538245,
+      "zigGenericMs": 1.8445319090908125,
+      "zigSmallMs": 2.7160677999998573
+    },
+    {
+      "payload": "mixed-large",
+      "op": "parse JSON only",
+      "kb": 217.3720703125,
+      "zigMs": 0.7842339740260262,
+      "watMs": 0.5476149545454643,
+      "ratio": 0.69828007033943,
+      "zigGenericMs": 0.7685752101910818,
+      "zigSmallMs": 0.9047402857142611
+    },
+    {
+      "payload": "mixed-small",
+      "op": "decode (GCF -> JSON)",
+      "kb": 0.767578125,
+      "zigMs": 0.005864828014270855,
+      "watMs": 0.0048303027692803285,
+      "ratio": 0.8236051862947691,
+      "zigGenericMs": 0.005711617943836218,
+      "zigSmallMs": 0.008461436891835008
+    },
+    {
+      "payload": "mixed-small",
+      "op": "decode tree only",
+      "kb": 0.767578125,
+      "zigMs": 0.0041869676215064875,
+      "watMs": 0.0035576512110523143,
+      "ratio": 0.8496963751948617,
+      "zigGenericMs": 0.003970061269725631,
+      "zigSmallMs": 0.005728524680160331
+    },
+    {
+      "payload": "mixed-small",
+      "op": "decode to tape",
+      "kb": 0.767578125,
+      "zigMs": 0.0061156069208037084,
+      "watMs": 0.005008317933308398,
+      "ratio": 0.8189404581042317
+    },
+    {
+      "payload": "mixed-small",
+      "op": "encode (JSON -> GCF)",
+      "kb": 0.6552734375,
+      "zigMs": 0.006072346068211807,
+      "watMs": 0.004512044029177069,
+      "ratio": 0.7430479057834367,
+      "zigGenericMs": 0.005996049465374081,
+      "zigSmallMs": 0.009321296877427684
+    },
+    {
+      "payload": "mixed-small",
+      "op": "parse JSON only",
+      "kb": 0.6552734375,
+      "zigMs": 0.0024866402047329195,
+      "watMs": 0.001821903060759863,
+      "ratio": 0.7326765879889514,
+      "zigGenericMs": 0.002503354889853161,
+      "zigSmallMs": 0.0029996105084238284
+    },
+    {
+      "payload": "nested-large",
+      "op": "decode (GCF -> JSON)",
+      "kb": 868.1044921875,
+      "zigMs": 9.69549792307729,
+      "watMs": 7.027939833332817,
+      "ratio": 0.7248663131168196,
+      "zigGenericMs": 9.664618769230751,
+      "zigSmallMs": 12.796046300001034
+    },
+    {
+      "payload": "nested-large",
+      "op": "decode tree only",
+      "kb": 868.1044921875,
+      "zigMs": 6.162790900000255,
+      "watMs": 4.736097846153895,
+      "ratio": 0.7684988705610147,
+      "zigGenericMs": 6.1069762999999515,
+      "zigSmallMs": 7.907148187499843
+    },
+    {
+      "payload": "nested-large",
+      "op": "decode to tape",
+      "kb": 868.1044921875,
+      "zigMs": 9.43001315384642,
+      "watMs": 6.712236388888818,
+      "ratio": 0.7117950186687656
+    },
+    {
+      "payload": "nested-large",
+      "op": "encode (JSON -> GCF)",
+      "kb": 1465.23046875,
+      "zigMs": 10.831269333333088,
+      "watMs": 7.69416718750017,
+      "ratio": 0.7103661584539748,
+      "zigGenericMs": 10.765379416667807,
+      "zigSmallMs": 14.497250444444944
+    },
+    {
+      "payload": "nested-large",
+      "op": "parse JSON only",
+      "kb": 1465.23046875,
+      "zigMs": 4.256350793102997,
+      "watMs": 2.835849023255896,
+      "ratio": 0.6662629940772536,
+      "zigGenericMs": 4.241838724138155,
+      "zigSmallMs": 4.916960400000098
+    },
+    {
+      "payload": "nested-small",
+      "op": "decode (GCF -> JSON)",
+      "kb": 2.0966796875,
+      "zigMs": 0.02385035095389556,
+      "watMs": 0.017917544938786743,
+      "ratio": 0.7512486912005045,
+      "zigGenericMs": 0.023820908892417822,
+      "zigSmallMs": 0.0323460277628034
+    },
+    {
+      "payload": "nested-small",
+      "op": "decode tree only",
+      "kb": 2.0966796875,
+      "zigMs": 0.016151850336475482,
+      "watMs": 0.012638780410741636,
+      "ratio": 0.7824973701124303,
+      "zigGenericMs": 0.01612525759204601,
+      "zigSmallMs": 0.021021434752145823
+    },
+    {
+      "payload": "nested-small",
+      "op": "decode to tape",
+      "kb": 2.0966796875,
+      "zigMs": 0.024129774427023812,
+      "watMs": 0.016619022157596162,
+      "ratio": 0.6887350815424083
+    },
+    {
+      "payload": "nested-small",
+      "op": "encode (JSON -> GCF)",
+      "kb": 3.4912109375,
+      "zigMs": 0.027181994790485022,
+      "watMs": 0.020234702579666544,
+      "ratio": 0.7444156595434873,
+      "zigGenericMs": 0.027291208276492424,
+      "zigSmallMs": 0.038714773870963275
+    },
+    {
+      "payload": "nested-small",
+      "op": "parse JSON only",
+      "kb": 3.4912109375,
+      "zigMs": 0.010100555172122638,
+      "watMs": 0.006841042925549442,
+      "ratio": 0.6772937535582801,
+      "zigGenericMs": 0.010057111716393376,
+      "zigSmallMs": 0.011694066458779852
+    },
+    {
+      "payload": "quoted-large",
+      "op": "decode (GCF -> JSON)",
+      "kb": 667.9931640625,
+      "zigMs": 6.050696600000083,
+      "watMs": 4.285952464285531,
+      "ratio": 0.7083403362656577,
+      "zigGenericMs": 5.798382666666017,
+      "zigSmallMs": 7.762681624999459
+    },
+    {
+      "payload": "quoted-large",
+      "op": "decode tree only",
+      "kb": 667.9931640625,
+      "zigMs": 3.9794772903222757,
+      "watMs": 3.1035140769232292,
+      "ratio": 0.7798798310699476,
+      "zigGenericMs": 3.857353531249828,
+      "zigSmallMs": 4.850913599999622
+    },
+    {
+      "payload": "quoted-large",
+      "op": "decode to tape",
+      "kb": 667.9931640625,
+      "zigMs": 5.937182523810494,
+      "watMs": 4.092037833333597,
+      "ratio": 0.6892221717831442
+    },
+    {
+      "payload": "quoted-large",
+      "op": "encode (JSON -> GCF)",
+      "kb": 1050.763671875,
+      "zigMs": 6.076819050000632,
+      "watMs": 4.115621033333203,
+      "ratio": 0.6772656877668218,
+      "zigGenericMs": 6.004744350000692,
+      "zigSmallMs": 6.668007999999746
+    },
+    {
+      "payload": "quoted-large",
+      "op": "parse JSON only",
+      "kb": 1050.763671875,
+      "zigMs": 2.7492769772725296,
+      "watMs": 1.5551138717949073,
+      "ratio": 0.5656446711810341,
+      "zigGenericMs": 2.685626711111076,
+      "zigSmallMs": 3.105293256410499
+    },
+    {
+      "payload": "quoted-small",
+      "op": "decode (GCF -> JSON)",
+      "kb": 1.541015625,
+      "zigMs": 0.015159556846894212,
+      "watMs": 0.010343047491810954,
+      "ratio": 0.6822790135801343,
+      "zigGenericMs": 0.014885876457453194,
+      "zigSmallMs": 0.02021528617146544
+    },
+    {
+      "payload": "quoted-small",
+      "op": "decode tree only",
+      "kb": 1.541015625,
+      "zigMs": 0.009904418537471732,
+      "watMs": 0.007564188717301492,
+      "ratio": 0.7637186058609734,
+      "zigGenericMs": 0.009606130232931411,
+      "zigSmallMs": 0.01243633025906705
+    },
+    {
+      "payload": "quoted-small",
+      "op": "decode to tape",
+      "kb": 1.541015625,
+      "zigMs": 0.014774183552873231,
+      "watMs": 0.010005847661136326,
+      "ratio": 0.6772521557842988
+    },
+    {
+      "payload": "quoted-small",
+      "op": "encode (JSON -> GCF)",
+      "kb": 2.45703125,
+      "zigMs": 0.015376891722195392,
+      "watMs": 0.010932881479457342,
+      "ratio": 0.7109942423328992,
+      "zigGenericMs": 0.01534773628341014,
+      "zigSmallMs": 0.01800603015754066
+    },
+    {
+      "payload": "quoted-small",
+      "op": "parse JSON only",
+      "kb": 2.45703125,
+      "zigMs": 0.006588694081475477,
+      "watMs": 0.003964305672095335,
+      "ratio": 0.6016830684613551,
+      "zigGenericMs": 0.006437028911655576,
+      "zigSmallMs": 0.007555929165092103
+    },
+    {
+      "payload": "tabular-large",
+      "op": "decode (GCF -> JSON)",
+      "kb": 1292.37890625,
+      "zigMs": 11.3306101818188,
+      "watMs": 8.518532866666403,
+      "ratio": 0.7518158978176938,
+      "zigGenericMs": 10.858474833335398,
+      "zigSmallMs": 14.47503711111171
+    },
+    {
+      "payload": "tabular-large",
+      "op": "decode tree only",
+      "kb": 1292.37890625,
+      "zigMs": 6.0703717000011235,
+      "watMs": 4.764166692307649,
+      "ratio": 0.7848228951625429,
+      "zigGenericMs": 5.626393090908426,
+      "zigSmallMs": 7.154516235295245
+    },
+    {
+      "payload": "tabular-large",
+      "op": "decode to tape",
+      "kb": 1292.37890625,
+      "zigMs": 10.29412608333223,
+      "watMs": 7.4303347647056555,
+      "ratio": 0.7218033570364469
+    },
+    {
+      "payload": "tabular-large",
+      "op": "encode (JSON -> GCF)",
+      "kb": 3030.572265625,
+      "zigMs": 13.996476444441619,
+      "watMs": 11.669689636362653,
+      "ratio": 0.8337591023487203,
+      "zigGenericMs": 14.10056533333328,
+      "zigSmallMs": 16.724378375001834
+    },
+    {
+      "payload": "tabular-large",
+      "op": "parse JSON only",
+      "kb": 3030.572265625,
+      "zigMs": 5.944673523809927,
+      "watMs": 4.319667142856425,
+      "ratio": 0.72664497479215,
+      "zigGenericMs": 5.874876761904618,
+      "zigSmallMs": 7.183146058824872
+    },
+    {
+      "payload": "tabular-small",
+      "op": "decode (GCF -> JSON)",
+      "kb": 2.9453125,
+      "zigMs": 0.02827602309142001,
+      "watMs": 0.020772034273844497,
+      "ratio": 0.7346165409006014,
+      "zigGenericMs": 0.027414417999085578,
+      "zigSmallMs": 0.036649436335877396
+    },
+    {
+      "payload": "tabular-small",
+      "op": "decode tree only",
+      "kb": 2.9453125,
+      "zigMs": 0.01475135611555025,
+      "watMs": 0.011942088068464645,
+      "ratio": 0.8095586585341673,
+      "zigGenericMs": 0.013875175396000722,
+      "zigSmallMs": 0.018158236495691243
+    },
+    {
+      "payload": "tabular-small",
+      "op": "decode to tape",
+      "kb": 2.9453125,
+      "zigMs": 0.025212925000000302,
+      "watMs": 0.019179418571199768,
+      "ratio": 0.7606978790124327
+    },
+    {
+      "payload": "tabular-small",
+      "op": "encode (JSON -> GCF)",
+      "kb": 7.2060546875,
+      "zigMs": 0.03576385399284674,
+      "watMs": 0.03003649524524716,
+      "ratio": 0.839856220508418,
+      "zigGenericMs": 0.03705981197900591,
+      "zigSmallMs": 0.04501504426106064
+    },
+    {
+      "payload": "tabular-small",
+      "op": "parse JSON only",
+      "kb": 7.2060546875,
+      "zigMs": 0.01461849141186565,
+      "watMs": 0.010701080167646291,
+      "ratio": 0.73202356290748,
+      "zigGenericMs": 0.014344309825481658,
+      "zigSmallMs": 0.017764621613619417
+    }
+  ]
+}
