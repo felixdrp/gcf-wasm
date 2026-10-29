@@ -36,7 +36,7 @@ async function wasmBytes(source: URL | string | Response | Promise<Response>): P
 /**
  * Create a codec. Without arguments, returns a shared instance backed by the
  * `gcf.wasm` shipped with this package (loaded and compiled once). With
- * `options` (e.g. `init(undefined, { maxRetainedMemory: 64 << 20 })`), returns
+ * `options` (e.g. `init(undefined, { maxRetainedMemory: 512 << 20 })`), returns
  * a new codec from the same compiled module. Each codec owns its own
  * WebAssembly memory; create more than one only for parallel use or
  * different options.

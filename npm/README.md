@@ -108,15 +108,19 @@ and the tests check that the two agree.
   (so a `Date` becomes its ISO string), and a `Map` or `Set` becomes `{}`.
   Normalise such values yourself if they matter. For exact key order
   (numeric-looking keys), encode JSON text with `encodeJson`.
-* **Memory: set a limit in long-lived processes.** Each codec has one
-  WebAssembly memory that grows to the largest payload it has handled, and
-  WebAssembly memory cannot shrink: a single 300,000-row payload leaves
-  about 150 MB reserved. With `init(undefined, { maxRetainedMemory: 64 << 20 })`
-  (bytes), a call that leaves more than that is followed by a fresh
-  instance, switched in as soon as the call returns, and the old memory is
-  garbage collected. `codec.memoryBytes` reports the current size and
-  `await codec.recycle()` releases it on demand. The limit bounds what stays
-  reserved between calls, not the peak during a call.
+* **Memory is released above 64 MiB.** Each codec has one WebAssembly
+  memory that grows to the largest payload it has handled, and WebAssembly
+  memory cannot shrink: a 300,000-row payload needs about 150 MB. By
+  default, a call that leaves more than 64 MiB reserved is followed by a
+  fresh instance, switched in as soon as the call returns, and the old
+  memory is garbage collected. Payloads up to about 5 MB of GCF (10 MB of
+  JSON) never reach the limit. Above it, the next large call is about
+  15–30% slower while the memory is requested again; if you handle such
+  payloads continuously, raise the limit with
+  `init(undefined, { maxRetainedMemory: 512 << 20 })` (bytes) or pass
+  `Infinity` to keep the memory. `codec.memoryBytes` reports the current
+  size and `await codec.recycle()` releases it on demand. The limit bounds
+  what stays reserved between calls, not the peak during a call.
 * **Streaming encoders run in JavaScript** (see above).
 
 ## CLI

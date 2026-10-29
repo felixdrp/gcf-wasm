@@ -515,7 +515,7 @@ With Node: `node --experimental-strip-types bin/gcf.ts ...`.
 
 | `GcfCodec` method | Purpose |
 |---|---|
-| `GcfCodec.instantiate(bytes, { maxRetainedMemory })` | Load `dist/gcf.wasm` (bytes or a compiled `WebAssembly.Module`) |
+| `GcfCodec.instantiate(bytes, { maxRetainedMemory })` | Load `dist/gcf.wasm` (bytes or a compiled `WebAssembly.Module`); memory above `maxRetainedMemory` (default 64 MiB) is released after each call |
 | `memoryBytes` / `recycle()` | WebAssembly memory the codec holds / release it with a fresh instance |
 | `decode(text, { largeInt })` | GCF → JS value (either profile) |
 | `decodeToJson(text)` | GCF → JSON text (exact integers) |
@@ -548,11 +548,13 @@ Classes: `GraphSession`, `GenericDeltaSession`, `GraphStreamEncoder`,
   `JSON.parse`.
 * **Graph payloads** are decoded through a compact columnar transfer
   automatically.
-* **Long-lived process with occasional large payloads?** A codec's memory
-  grows to its largest payload and WebAssembly memory cannot shrink. Pass
-  `maxRetainedMemory` (bytes): after a call that leaves more, the codec
-  switches to a fresh instance once the call returns, and the old memory is
-  garbage collected. Or call `await codec.recycle()` yourself.
+* **Large payloads, again and again?** A codec's memory grows to its
+  largest payload, and WebAssembly memory cannot shrink, so by default a
+  call that leaves more than 64 MiB is followed by a fresh instance (the
+  old memory is garbage collected). The next large call then pays about
+  15–30% to request the memory again. If most of your payloads are that
+  large, raise `maxRetainedMemory` or set it to `Infinity`; to release
+  memory at a moment of your choosing, call `await codec.recycle()`.
 
 Measured against the Blackwell TypeScript SDK (see
 [`bench/README.md`](../bench/README.md)):

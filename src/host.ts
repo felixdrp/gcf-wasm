@@ -73,6 +73,9 @@ export interface BytesOptions {
   view?: boolean;
 }
 
+/** Default `maxRetainedMemory`: 64 MiB. */
+export const DEFAULT_MAX_RETAINED_MEMORY = 64 * 1024 * 1024;
+
 export interface CodecOptions {
   /**
    * Bytes of WebAssembly memory a codec may keep reserved between calls.
@@ -80,8 +83,15 @@ export interface CodecOptions {
    * WebAssembly memory cannot shrink, so when a call leaves more than this,
    * the codec prepares a fresh instance in the background and switches to
    * it as soon as the call has returned (asynchronously, never during a
-   * call); the old memory is then garbage collected. Calls can still use more while they run: this bounds what
-   * stays reserved afterwards, not the peak. Default: no limit.
+   * call); the old memory is then garbage collected. Calls can still use
+   * more while they run: this bounds what stays reserved afterwards, not
+   * the peak.
+   *
+   * Default: 64 MiB (`DEFAULT_MAX_RETAINED_MEMORY`), which payloads up to
+   * about 5 MB of GCF (10 MB of JSON) never reach. Above it, the first call
+   * on the fresh instance is about 15–30% slower while the memory is
+   * requested again, so if you handle such payloads continuously, raise the
+   * limit or pass `Infinity` to keep the memory.
    */
   maxRetainedMemory?: number;
 }
@@ -353,7 +363,9 @@ export class GcfCodec {
   private constructor(module: WebAssembly.Module, exports: Exports, opts: CodecOptions) {
     this.module = module;
     this.x = exports;
-    this.maxRetained = opts.maxRetainedMemory ?? Infinity;
+    const max = opts.maxRetainedMemory ?? DEFAULT_MAX_RETAINED_MEMORY;
+    if (!(max > 0)) throw new RangeError(`maxRetainedMemory must be a positive number of bytes or Infinity, got ${max}`);
+    this.maxRetained = max;
   }
 
   static async instantiate(wasm: BufferSource | WebAssembly.Module, opts: CodecOptions = {}): Promise<GcfCodec> {

@@ -12,17 +12,22 @@ Tested against gcf-zig 0.1.0. `gcf.wasm` is unchanged.
 
 ### Added
 * `maxRetainedMemory` option (`init(source, options)`,
-  `GcfCodec.instantiate(wasm, options)`): when a call leaves the codec's
+  `GcfCodec.instantiate(wasm, options)`), **64 MiB by default**
+  (`DEFAULT_MAX_RETAINED_MEMORY`): when a call leaves the codec's
   WebAssembly memory above the limit, a fresh instance takes over as soon
   as the call returns and the old memory is garbage collected. WebAssembly
   memory cannot shrink, so until now a single large payload kept its peak
-  reserved for the life of the codec.
+  reserved for the life of the codec. Payloads up to about 5 MB of GCF
+  never reach the default; above it, the next large call is about 15–30%
+  slower while the memory is requested again. `Infinity` restores the
+  0.1 behaviour.
 * `codec.recycle()` releases the memory on demand; `codec.memoryBytes`
   reports it.
 * `init()` compiles the bundled `gcf.wasm` once; `init(undefined, options)`
   returns a new codec from that module.
 
 ### Changed
+* Codecs release memory above 64 MiB by default (see above).
 * `GcfCodec.exports` is now a getter returning the current instance's
   exports (it changes after a recycle). Read it per call rather than
   keeping it.

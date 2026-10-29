@@ -2,13 +2,14 @@
 // Copyright 2026 felixdrp
 //
 // gcf_memory.test.ts — releasing WebAssembly memory after large payloads:
-// `codec.recycle()`, the `maxRetainedMemory` option and `codec.memoryBytes`.
+// `codec.recycle()`, the `maxRetainedMemory` option (default 64 MiB) and
+// `codec.memoryBytes`.
 // WebAssembly memory cannot shrink, so the codec replaces its instance
 // (between calls, never during one) and the old memory is garbage collected.
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { engineWasmPath } from "./lib/engines";
-import { GcfCodec, GcfError } from "../src/host";
+import { DEFAULT_MAX_RETAINED_MEMORY, GcfCodec, GcfError } from "../src/host";
 import { init } from "../src/index";
 
 const bytes = readFileSync(engineWasmPath);
@@ -25,8 +26,8 @@ async function released(gcf: GcfCodec, initial: number): Promise<void> {
 }
 
 describe("memory release", () => {
-  test("without a limit the memory keeps its peak (WebAssembly cannot shrink)", async () => {
-    const gcf = await GcfCodec.instantiate(bytes);
+  test("with maxRetainedMemory: Infinity the memory keeps its peak (WebAssembly cannot shrink)", async () => {
+    const gcf = await GcfCodec.instantiate(bytes, { maxRetainedMemory: Infinity });
     const initial = gcf.memoryBytes;
     gcf.decode(gcf.encode(big));
     const peak = gcf.memoryBytes;
@@ -37,7 +38,7 @@ describe("memory release", () => {
   });
 
   test("recycle() releases the memory; earlier results, views included, stay valid", async () => {
-    const gcf = await GcfCodec.instantiate(bytes);
+    const gcf = await GcfCodec.instantiate(bytes, { maxRetainedMemory: Infinity });
     const initial = gcf.memoryBytes;
     const text = gcf.encode(big);
     const view = gcf.decodeToJsonBytes(gcf.encodeJson('{"k":[1,2]}'), { view: true });
@@ -86,6 +87,25 @@ describe("memory release", () => {
     await released(gcf, initial);
     expect(() => gcf.decode(text.replace("## users [60000]", "## users [60001]"))).toThrow(GcfError);
     await released(gcf, initial);
+  });
+
+  test("default limit: 64 MiB, kept below it, released above it", async () => {
+    expect(DEFAULT_MAX_RETAINED_MEMORY).toBe(64 * MiB);
+    const gcf = await GcfCodec.instantiate(bytes);
+    const initial = gcf.memoryBytes;
+    gcf.decode(gcf.encode(big)); // tens of MiB: below the default
+    await settle();
+    expect(gcf.memoryBytes).toBeGreaterThan(16 * MiB);
+    const huge = rows(250_000); // above 64 MiB
+    gcf.encode(huge);
+    expect(gcf.memoryBytes).toBeGreaterThan(DEFAULT_MAX_RETAINED_MEMORY);
+    await released(gcf, initial);
+  });
+
+  test("maxRetainedMemory must be positive", async () => {
+    for (const bad of [0, -1, Number.NaN]) {
+      await expect(GcfCodec.instantiate(bytes, { maxRetainedMemory: bad })).rejects.toThrow(RangeError);
+    }
   });
 
   test("init(source, options) passes the options; each call returns a new codec", async () => {
