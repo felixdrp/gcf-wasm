@@ -12,10 +12,11 @@
 // `new URL("./gcf.wasm", import.meta.url)` asset pattern). Pass your own
 // bytes, URL, Response or WebAssembly.Module to control loading.
 export * from "./host.ts";
-import { GcfCodec } from "./host.ts";
+import { type CodecOptions, GcfCodec } from "./host.ts";
 
 export type WasmSource = BufferSource | WebAssembly.Module | URL | string | Response | Promise<Response>;
 
+let bundled: Promise<WebAssembly.Module> | undefined;
 let shared: Promise<GcfCodec> | undefined;
 
 async function wasmBytes(source: URL | string | Response | Promise<Response>): Promise<BufferSource> {
@@ -34,16 +35,21 @@ async function wasmBytes(source: URL | string | Response | Promise<Response>): P
 
 /**
  * Create a codec. Without arguments, returns a shared instance backed by the
- * `gcf.wasm` shipped with this package (loaded once). Each codec owns its
- * own WebAssembly memory; create more than one only for parallel use.
+ * `gcf.wasm` shipped with this package (loaded and compiled once). With
+ * `options` (e.g. `init(undefined, { maxRetainedMemory: 64 << 20 })`), returns
+ * a new codec from the same compiled module. Each codec owns its own
+ * WebAssembly memory; create more than one only for parallel use or
+ * different options.
  */
-export function init(source?: WasmSource): Promise<GcfCodec> {
+export function init(source?: WasmSource, options?: CodecOptions): Promise<GcfCodec> {
   if (source === undefined) {
-    shared ??= wasmBytes(new URL("./gcf.wasm", import.meta.url)).then((b) => GcfCodec.instantiate(b));
+    bundled ??= wasmBytes(new URL("./gcf.wasm", import.meta.url)).then((b) => WebAssembly.compile(b));
+    if (options !== undefined) return bundled.then((m) => GcfCodec.instantiate(m, options));
+    shared ??= bundled.then((m) => GcfCodec.instantiate(m));
     return shared;
   }
   if (source instanceof WebAssembly.Module || source instanceof ArrayBuffer || ArrayBuffer.isView(source)) {
-    return GcfCodec.instantiate(source as BufferSource | WebAssembly.Module);
+    return GcfCodec.instantiate(source as BufferSource | WebAssembly.Module, options);
   }
-  return wasmBytes(source as URL | string | Response).then((b) => GcfCodec.instantiate(b));
+  return wasmBytes(source as URL | string | Response).then((b) => GcfCodec.instantiate(b, options));
 }

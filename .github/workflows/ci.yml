@@ -49,4 +49,5 @@ jobs:
           tar -xzf npm/*.tgz -C /tmp/smoke/node_modules/@felixdrp/gcf-wasm --strip-components=1
           cd /tmp/smoke
           node --input-type=module -e 'import { init } from "@felixdrp/gcf-wasm"; const g = await init(); const t = g.encode({ a: [1, 2] }); if (JSON.stringify(g.decode(t)) !== "{\"a\":[1,2]}") process.exit(1); console.log(t);'
+          node --input-type=module -e 'import { init } from "@felixdrp/gcf-wasm"; const s = await init(); const g = await init(undefined, { maxRetainedMemory: 1 << 20 }); if (g === s || g.memoryBytes <= 0) process.exit(1); g.encode({ rows: Array.from({ length: 50000 }, (_, i) => ({ i, s: "x" + i })) }); await new Promise((r) => setTimeout(r, 0)); if (g.memoryBytes > 1 << 20) process.exit(1); console.log("maxRetainedMemory ok");'
           echo '{"k":[1,2,3]}' | node node_modules/@felixdrp/gcf-wasm/dist/cli.js encode

@@ -6,6 +6,27 @@ All notable changes to this project are documented here. Versions follow
 [gcf-zig](https://codeberg.org/felixdrp/gcf-zig) version it is tested against
 (the `reference/gcf-zig` submodule).
 
+## 0.2.0 — unreleased
+
+Tested against gcf-zig 0.1.0. `gcf.wasm` is unchanged.
+
+### Added
+* `maxRetainedMemory` option (`init(source, options)`,
+  `GcfCodec.instantiate(wasm, options)`): when a call leaves the codec's
+  WebAssembly memory above the limit, a fresh instance takes over as soon
+  as the call returns and the old memory is garbage collected. WebAssembly
+  memory cannot shrink, so until now a single large payload kept its peak
+  reserved for the life of the codec.
+* `codec.recycle()` releases the memory on demand; `codec.memoryBytes`
+  reports it.
+* `init()` compiles the bundled `gcf.wasm` once; `init(undefined, options)`
+  returns a new codec from that module.
+
+### Changed
+* `GcfCodec.exports` is now a getter returning the current instance's
+  exports (it changes after a recycle). Read it per call rather than
+  keeping it.
+
 ## 0.1.1 — 2026-10-29
 
 Documentation only; the code and `gcf.wasm` are unchanged. Tested against

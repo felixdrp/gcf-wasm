@@ -515,7 +515,8 @@ With Node: `node --experimental-strip-types bin/gcf.ts ...`.
 
 | `GcfCodec` method | Purpose |
 |---|---|
-| `GcfCodec.instantiate(bytes)` | Load `dist/gcf.wasm` |
+| `GcfCodec.instantiate(bytes, { maxRetainedMemory })` | Load `dist/gcf.wasm` (bytes or a compiled `WebAssembly.Module`) |
+| `memoryBytes` / `recycle()` | WebAssembly memory the codec holds / release it with a fresh instance |
 | `decode(text, { largeInt })` | GCF → JS value (either profile) |
 | `decodeToJson(text)` | GCF → JSON text (exact integers) |
 | `decodeToJsonBytes(bytes, { view })` | GCF bytes → JSON bytes |
@@ -547,6 +548,11 @@ Classes: `GraphSession`, `GenericDeltaSession`, `GraphStreamEncoder`,
   `JSON.parse`.
 * **Graph payloads** are decoded through a compact columnar transfer
   automatically.
+* **Long-lived process with occasional large payloads?** A codec's memory
+  grows to its largest payload and WebAssembly memory cannot shrink. Pass
+  `maxRetainedMemory` (bytes): after a call that leaves more, the codec
+  switches to a fresh instance once the call returns, and the old memory is
+  garbage collected. Or call `await codec.recycle()` yourself.
 
 Measured against the Blackwell TypeScript SDK (see
 [`bench/README.md`](../bench/README.md)):

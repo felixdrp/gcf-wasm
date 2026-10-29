@@ -73,6 +73,19 @@ export interface BytesOptions {
   view?: boolean;
 }
 
+export interface CodecOptions {
+  /**
+   * Bytes of WebAssembly memory a codec may keep reserved between calls.
+   * A codec's memory grows to the largest payload it has handled and
+   * WebAssembly memory cannot shrink, so when a call leaves more than this,
+   * the codec prepares a fresh instance in the background and switches to
+   * it as soon as the call has returned (asynchronously, never during a
+   * call); the old memory is then garbage collected. Calls can still use more while they run: this bounds what
+   * stays reserved afterwards, not the peak. Default: no limit.
+   */
+  maxRetainedMemory?: number;
+}
+
 export interface GraphSymbol {
   qualifiedName: string;
   kind: string;
@@ -331,16 +344,47 @@ function parseLargeInts(text: string, mode: "string" | "bigint"): unknown {
 // ============================================================================
 
 export class GcfCodec {
-  readonly exports: Exports;
+  private x: Exports;
+  private readonly module: WebAssembly.Module;
+  private readonly maxRetained: number;
+  /** A fresh instance being prepared; it replaces the current one when ready. */
+  private pending: Promise<void> | undefined;
 
-  private constructor(exports: Exports) {
-    this.exports = exports;
+  private constructor(module: WebAssembly.Module, exports: Exports, opts: CodecOptions) {
+    this.module = module;
+    this.x = exports;
+    this.maxRetained = opts.maxRetainedMemory ?? Infinity;
   }
 
-  static async instantiate(wasm: BufferSource | WebAssembly.Module): Promise<GcfCodec> {
-    const instance =
-      wasm instanceof WebAssembly.Module ? await WebAssembly.instantiate(wasm, {}) : (await WebAssembly.instantiate(wasm, {})).instance;
-    return new GcfCodec(instance.exports as unknown as Exports);
+  static async instantiate(wasm: BufferSource | WebAssembly.Module, opts: CodecOptions = {}): Promise<GcfCodec> {
+    const module = wasm instanceof WebAssembly.Module ? wasm : await WebAssembly.compile(wasm);
+    const instance = await WebAssembly.instantiate(module, {});
+    return new GcfCodec(module, instance.exports as unknown as Exports, opts);
+  }
+
+  /** The current instance's exports (the raw ABI, docs/WASM_ABI.md). */
+  get exports(): Exports {
+    return this.x;
+  }
+
+  /** Bytes of WebAssembly memory the codec currently holds. */
+  get memoryBytes(): number {
+    return this.x.memory.buffer.byteLength;
+  }
+
+  /**
+   * Replace the instance with a fresh one, releasing the memory it holds
+   * (see `maxRetainedMemory`, which does this automatically). Results of
+   * earlier calls stay valid, including `view: true` byte views.
+   */
+  recycle(): Promise<void> {
+    // Every codec method is synchronous, so this continuation never runs in
+    // the middle of a call: the switch always happens between calls.
+    this.pending ??= WebAssembly.instantiate(this.module, {}).then((instance) => {
+      this.x = instance.exports as unknown as Exports;
+      this.pending = undefined;
+    });
+    return this.pending;
   }
 
   // ---- plumbing -----------------------------------------------------------------
@@ -360,7 +404,17 @@ export class GcfCodec {
     return utf8.encodeInto(input, new Uint8Array(x.memory.buffer, ptr, cap)).written;
   }
 
+  /**
+   * Every call ends by reading its result through output() or outputBytes().
+   * When the call left more memory than `maxRetainedMemory`, a fresh
+   * instance is prepared; it takes over once the call has returned.
+   */
+  private releaseIfLarge(): void {
+    if (!this.pending && this.x.memory.buffer.byteLength > this.maxRetained) void this.recycle();
+  }
+
   private output(status: number): string {
+    this.releaseIfLarge();
     const x = this.exports;
     const text = (p: number, n: number) => fromUtf8.decode(new Uint8Array(x.memory.buffer, p, n));
     if (status !== 0) {
@@ -375,6 +429,7 @@ export class GcfCodec {
 
   /** Raw output bytes: an owned copy, or a view valid until the next call. */
   private outputBytes(status: number, view: boolean): Uint8Array {
+    this.releaseIfLarge();
     if (status !== 0) this.output(status); // throws GcfError
     const x = this.exports;
     const bytes = new Uint8Array(x.memory.buffer, x.gcf_output_ptr(), x.gcf_output_len());

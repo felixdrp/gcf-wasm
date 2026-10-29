@@ -108,14 +108,15 @@ and the tests check that the two agree.
   (so a `Date` becomes its ISO string), and a `Map` or `Set` becomes `{}`.
   Normalise such values yourself if they matter. For exact key order
   (numeric-looking keys), encode JSON text with `encodeJson`.
-* **Memory keeps its peak.** Each codec has one WebAssembly memory that
-  grows to the largest payload it has handled and never shrinks
-  (WebAssembly memory cannot shrink). It is reused, not leaked, but a
-  single 300,000-row payload leaves about 150 MB reserved. In long-lived
-  processes, watch `codec.exports.gcf_memory_pages()` (64 KiB pages) and,
-  after an unusually large payload, drop the codec and create a fresh one
-  with `init(bytes)` or `init(module)`; `init()` without arguments always
-  returns the same shared instance.
+* **Memory: set a limit in long-lived processes.** Each codec has one
+  WebAssembly memory that grows to the largest payload it has handled, and
+  WebAssembly memory cannot shrink: a single 300,000-row payload leaves
+  about 150 MB reserved. With `init(undefined, { maxRetainedMemory: 64 << 20 })`
+  (bytes), a call that leaves more than that is followed by a fresh
+  instance, switched in as soon as the call returns, and the old memory is
+  garbage collected. `codec.memoryBytes` reports the current size and
+  `await codec.recycle()` releases it on demand. The limit bounds what stays
+  reserved between calls, not the peak during a call.
 * **Streaming encoders run in JavaScript** (see above).
 
 ## CLI
