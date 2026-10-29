@@ -61,6 +61,32 @@ gcf.decode(text);
 Start with the [tutorial](docs/TUTORIAL.md). Every example in it is a
 tested file under [`examples/`](examples).
 
+## Compatibility and limits
+
+* **Spec 3.6.0 output.** The encoder factors constant columns
+  (`## users [3]{id,name=Ada}`), as SPEC v3.6.0 §7.4.7 requires, byte for
+  byte like Blackwell's gcf-typescript 2.7.0. Decoders written for older
+  versions of the spec cannot read it: `@blackwell-systems/gcf` 2.6.1, the
+  latest on npm at the time of writing, predates spec 3.6.0 and fails with
+  `invalid field name: name=Ada`. Check the version of the decoder at the
+  other end.
+* **JS values are normalised like `JSON.stringify`.** `encode(value)`
+  serialises with `JSON.stringify` semantics, the host-value normalisation
+  that SPEC §2.3.2 allows: `undefined` and functions are omitted, `NaN` and
+  `±Infinity` become null, array holes become null, `toJSON` is honoured
+  (so a `Date` becomes its ISO string), and a `Map` or `Set` becomes `{}`.
+  Normalise such values yourself if they matter. For exact key order
+  (numeric-looking keys), encode JSON text with `encodeJson`.
+* **Memory keeps its peak.** Each codec has one WebAssembly memory that
+  grows to the largest payload it has handled and never shrinks
+  (WebAssembly memory cannot shrink). It is reused, not leaked, but a
+  single 300,000-row payload leaves about 150 MB reserved. In long-lived
+  processes, watch `codec.exports.gcf_memory_pages()` (64 KiB pages) and,
+  after an unusually large payload, drop the codec and create a fresh one
+  with `init(bytes)` or `init(module)`; `init()` without arguments always
+  returns the same shared instance.
+* **Streaming encoders run in JavaScript** (see above).
+
 ## WebAssembly from other languages
 
 `gcf.wasm` has no imports and exposes a small C-style ABI: allocate input,
