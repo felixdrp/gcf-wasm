@@ -10,7 +10,7 @@ a single 88 KB WebAssembly module written by hand in WebAssembly text, with
 |---|---|---|
 | **Node, Bun, Deno, browsers, edge** | [`@felixdrp/gcf-wasm`](npm/README.md) on npm | `npm install @felixdrp/gcf-wasm` |
 | **Any WebAssembly runtime** | `gcf.wasm` (release assets) | wasmtime, wasmer, wazero, … ([ABI](docs/WASM_ABI.md)) |
-| **Zig** | [gcf-zig](https://codeberg.org/felixdrp/gcf-zig) | `zig fetch --save git+https://codeberg.org/felixdrp/gcf-zig#v0.1.0` |
+| **Zig** | [gcf-zig](https://codeberg.org/felixdrp/gcf-zig) | `zig fetch --save git+https://codeberg.org/felixdrp/gcf-zig#v0.2.0` |
 
 The codec mirrors [gcf-zig](https://codeberg.org/felixdrp/gcf-zig), the
 reference implementation in Zig, function for function, and is tested byte

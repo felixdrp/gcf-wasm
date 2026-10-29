@@ -6,9 +6,9 @@ All notable changes to this project are documented here. Versions follow
 [gcf-zig](https://codeberg.org/felixdrp/gcf-zig) version it is tested against
 (the `reference/gcf-zig` submodule).
 
-## 0.2.0 — unreleased
+## 0.2.0 — 2026-10-29
 
-Tested against gcf-zig at commit 486da00 (tape in post-order, after 0.1.0).
+Tested against gcf-zig 0.2.0.
 
 ### Decoding streams: 3–4 times less memory
 * `decode`, `decodeToJson`, `decodeToJsonBytes` and `decodeLazy` (the WAT

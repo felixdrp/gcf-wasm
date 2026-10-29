@@ -1,6 +1,6 @@
 {
   "name": "gcf-wasm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Development workspace for gcf-wasm (the hand-written WebAssembly GCF codec and the @felixdrp/gcf-wasm npm package). Not published itself.",
   "type": "module",
