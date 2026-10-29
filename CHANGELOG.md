@@ -6,6 +6,18 @@ All notable changes to this project are documented here. Versions follow
 [gcf-zig](https://codeberg.org/felixdrp/gcf-zig) version it is tested against
 (the `reference/gcf-zig` submodule).
 
+## 0.1.1 — 2026-10-29
+
+Documentation only; the code and `gcf.wasm` are unchanged. Tested against
+gcf-zig 0.1.0.
+
+### Documentation
+* A "Compatibility and limits" section in the README and on npm:
+  constant columns need a spec 3.6.0 decoder (`@blackwell-systems/gcf`
+  2.6.1 on npm predates it); `encode(value)` normalises JS values like
+  `JSON.stringify`; a codec's memory keeps its peak, and how to recreate
+  one.
+
 ## 0.1.0 — 2026-10-28
 
 First public release. Implements GCF specification **v3.6.0** and passes

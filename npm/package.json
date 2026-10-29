@@ -1,6 +1,6 @@
 {
   "name": "@felixdrp/gcf-wasm",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Fast, strict codec for the Graph Compact Format (GCF v3.6.0): an 88 KB WebAssembly SIMD engine written by hand in WAT, with a zero-dependency JS API for Node, Bun, Deno, browsers and edge runtimes.",
   "keywords": ["gcf", "graph-compact-format", "llm", "tokens", "token-efficient", "serialization", "json-alternative", "mcp", "webassembly", "wasm", "simd", "wat"],
   "license": "Apache-2.0",
