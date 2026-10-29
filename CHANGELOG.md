@@ -8,7 +8,21 @@ All notable changes to this project are documented here. Versions follow
 
 ## 0.2.0 — unreleased
 
-Tested against gcf-zig 0.1.0. `gcf.wasm` is unchanged.
+Tested against gcf-zig at commit 486da00 (tape in post-order, after 0.1.0).
+
+### Decoding streams: 3–4 times less memory
+* `decode`, `decodeToJson`, `decodeToJsonBytes` and `decodeLazy` (the WAT
+  exports `gcf_decode` and `gcf_decode_tape`) write a generic document
+  while they parse it, instead of building the whole document as a tree
+  first. Each table row is assembled, written and released. Peak memory
+  for a 300,000-row table (11.6 MB of GCF): 129 → 40 MB to JSON, 220 → 50 MB
+  to the lazy tape (`docs/WAT_CODEC.md` §10). Decoding on a fresh instance
+  is 13–21% faster (lazy tape: 31–40%); with memory already grown, from 9%
+  faster to 8% slower depending on the payload and engine.
+* The output is byte-identical to before and to gcf-zig; errors keep their
+  category and line.
+* Floats no longer leave a scratch buffer behind in the arena (decoding and
+  encoding).
 
 ### Added
 * `maxRetainedMemory` option (`init(source, options)`,
@@ -17,10 +31,10 @@ Tested against gcf-zig 0.1.0. `gcf.wasm` is unchanged.
   WebAssembly memory above the limit, a fresh instance takes over as soon
   as the call returns and the old memory is garbage collected. WebAssembly
   memory cannot shrink, so until now a single large payload kept its peak
-  reserved for the life of the codec. Payloads up to about 5 MB of GCF
-  never reach the default; above it, the next large call is about 15–30%
-  slower while the memory is requested again. `Infinity` restores the
-  0.1 behaviour.
+  reserved for the life of the codec. Decoding up to about 15 MB of GCF, or
+  encoding up to about 15 MB of JSON, stays below the default; above it,
+  the next large call is up to about 25% slower while the memory is
+  requested again. `Infinity` restores the 0.1 behaviour.
 * `codec.recycle()` releases the memory on demand; `codec.memoryBytes`
   reports it.
 * `init()` compiles the bundled `gcf.wasm` once; `init(undefined, options)`
@@ -28,6 +42,10 @@ Tested against gcf-zig 0.1.0. `gcf.wasm` is unchanged.
 
 ### Changed
 * Codecs release memory above 64 MiB by default (see above).
+* The lazy-decoding tape (`gcf_decode_tape`) lists its nodes in post-order,
+  children before their container, as gcf-zig now does. The format and its
+  version are unchanged: readers follow node indices and the header's root
+  index.
 * `GcfCodec.exports` is now a getter returning the current instance's
   exports (it changes after a recycle). Read it per call rather than
   keeping it.

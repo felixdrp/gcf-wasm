@@ -212,6 +212,72 @@
   (i32.store (global.get $wp) (i32.const 0x6C6C756E))  ;; "null"
   (global.set $wp (i32.add (global.get $wp) (i32.const 4))))
 
+;; ---------------------------------------------------------------------------
+;; Streaming decode
+;;
+;; gcf_decode and gcf_decode_tape decode generic documents in a streaming
+;; mode ($smode 1 = JSON, 2 = tape): the containers of the document write
+;; their output while they are parsed, and each table row is assembled as a
+;; small tree and written as soon as it is complete, so the whole document
+;; never exists as a tree. Inside a row (attachments) the parser builds
+;; trees as usual: $sact is 1 only at document level. A container that has
+;; written itself returns the value (10, tape index, element count).
+;;
+;; JSON output is the same bytes as serialising the tree. While a document
+;; streams JSON ($jlive), the output cursor stays open from $root to the end
+;; of gcf_decode; the one parser path that uses STK_OUT as scratch (identity
+;; keys) publishes it first and reopens it afterwards.
+;; ---------------------------------------------------------------------------
+(global $smode (mut i32) (i32.const 0))
+(global $sact (mut i32) (i32.const 0))
+(global $jsep (mut i32) (i32.const 0))   ;; the open JSON container has an element
+(global $jlive (mut i32) (i32.const 0))  ;; the output cursor is open for streaming
+
+;; Streaming in `mode` at this position?
+(func $streaming (param $mode i32) (result i32)
+  (i32.and (global.get $sact) (i32.eq (global.get $smode) (local.get $mode))))
+
+(func $je_sep
+  (if (global.get $jsep) (then (call $w_need (i32.const 1)) (call $w_byte (i32.const 0x2C))))
+  (global.set $jsep (i32.const 1)))
+
+;; Separator before an array element.
+(func $je_elem
+  (call $je_sep))
+
+;; Separator and `"key":` before an object member's value.
+(func $je_key (param $p i32) (param $n i32)
+  (call $je_sep)
+  (call $w_need (i32.add (i32.mul (local.get $n) (i32.const 6)) (i32.const 20)))
+  (call $w_string (local.get $p) (local.get $n))
+  (call $w_byte (i32.const 0x3A)))
+
+(func $je_open (param $c i32)
+  (call $w_need (i32.const 1))
+  (call $w_byte (local.get $c))
+  (global.set $jsep (i32.const 0)))
+
+(func $je_close (param $c i32)
+  (call $w_need (i32.const 1))
+  (call $w_byte (local.get $c))
+  (global.set $jsep (i32.const 1)))
+
+;; A streamed row: separator, `"key":` for a keyed map (klen >= 0), then
+;; the row object.
+(func $je_row (param $kp i32) (param $kn i32) (param $a i32) (param $n i32)
+  (call $je_sep)
+  (if (i32.ge_s (local.get $kn) (i32.const 0))
+    (then
+      (call $w_need (i32.add (i32.mul (local.get $kn) (i32.const 6)) (i32.const 20)))
+      (call $w_string (local.get $kp) (local.get $kn))
+      (call $w_byte (i32.const 0x3A))))
+  (call $w_value (i32.const 7) (local.get $a) (i64.extend_i32_u (local.get $n))))
+
+;; A value that has not written itself (a scalar, an inline array, a row).
+(func $je_value (param $t i32) (param $a i32) (param $b i64)
+  (if (i32.eq (local.get $t) (i32.const 10)) (then (return)))
+  (call $w_value (local.get $t) (local.get $a) (local.get $b)))
+
 ;; Whole value -> JSON in the output buffer, reserving `hint` bytes first.
 (func $json_value (param $t i32) (param $a i32) (param $b i64) (param $hint i32)
   (call $w_begin (local.get $hint))
@@ -225,11 +291,20 @@
 ;; GCF -> JSON. Returns 0 or an ErrorCode.
 (func (export "gcf_decode") (param $len i32) (result i32)
   (local $vt i32) (local $va i32) (local $vb i64)
+  ;; JSON output is typically about twice the GCF input: reserve it before
+  ;; parsing, since a generic document is written while it is parsed
+  (call $w_begin (i32.add (i32.shl (local.get $len) (i32.const 1)) (i32.const 64)))
+  (call $w_sync)
+  (global.set $smode (i32.const 1))
   (call $decode_doc (global.get $in_ptr) (local.get $len))
   (local.set $vb) (local.set $va) (local.set $vt)
+  (if (global.get $jlive) (then (call $w_sync) (global.set $jlive (i32.const 0))))
+  (global.set $smode (i32.const 0))
+  (global.set $sact (i32.const 0))
   (if (global.get $err) (then (return (global.get $err))))
-  ;; JSON output is typically 2-4x the GCF input: reserve once
-  (call $json_value (local.get $vt) (local.get $va) (local.get $vb) (i32.add (i32.mul (local.get $len) (i32.const 3)) (i32.const 64)))
+  ;; graph and delta payloads, and scalar roots, come back as a tree
+  (if (i32.ne (local.get $vt) (i32.const 10))
+    (then (call $json_value (local.get $vt) (local.get $va) (local.get $vb) (i32.const 0))))
   (if (global.get $err) (then (return (global.get $err))))
   (call $out_finish)
   (i32.const 0))

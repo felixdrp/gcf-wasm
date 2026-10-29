@@ -368,10 +368,13 @@
 (func $parse_f64 (param $s i32) (param $len i32) (param $line i32) (result f64)
   (local $i i32) (local $neg i32) (local $c i32) (local $man i64) (local $nd i32) (local $e10 i32)
   (local $trunc i32) (local $seen_dot i32) (local $exp i32) (local $eneg i32) (local $edigits i32)
-  (local $ds i32) (local $dn i32) (local $bits i64) (local $ok i32) (local $bits2 i64) (local $ok2 i32) (local $v f64)
+  (local $ds i32) (local $dn i32) (local $bits i64) (local $ok i32) (local $bits2 i64) (local $ok2 i32) (local $v f64) (local $top0 i32)
   (if (i32.eq (i32.load8_u (local.get $s)) (i32.const 0x2D)) (then (local.set $neg (i32.const 1)) (local.set $i (i32.const 1))))
   ;; Significant digits go to a scratch string (for the exact path) and the
-  ;; first 19 into `man`; `e10` tracks the decimal exponent of `man`.
+  ;; first 19 into `man`; `e10` tracks the decimal exponent of `man`. The
+  ;; scratch string is released at the end when nothing was allocated after
+  ;; it (the exact path's big integers are), so floats leave no garbage.
+  (local.set $top0 (global.get $arena_top))
   (local.set $ds (call $alloc (local.get $len)))
   (if (global.get $err) (then (return (f64.const 0))))
   (block $mant_done
@@ -460,6 +463,8 @@
     (local.set $v (f64.reinterpret_i64 (local.get $bits))))
   (if (f64.eq (f64.abs (local.get $v)) (f64.const inf))
     (then (call $fail (i32.const 14) (local.get $line)) (return (f64.const 0))))
+  (if (i32.eq (global.get $arena_top) (i32.add (local.get $ds) (local.get $len)))
+    (then (global.set $arena_top (local.get $top0))))
   (select (f64.neg (local.get $v)) (local.get $v) (local.get $neg)))
 
 ;; ---------------------------------------------------------------------------

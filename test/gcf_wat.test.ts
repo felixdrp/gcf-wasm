@@ -123,7 +123,7 @@ describeOracle("WAT codec vs Zig engine: decoding", () => {
     }
   });
 
-  test("generated generic values: encode, decode and mutated wires", () => {
+  test("generated generic values: encode, decode (JSON and tape) and mutated wires", () => {
     const r = rng(20261012);
     for (let i = 0; i < 1500; i++) {
       const json = JSON.stringify(gen(r));
@@ -132,7 +132,12 @@ describeOracle("WAT codec vs Zig engine: decoding", () => {
       const out = call(zig, "gcf_encode", json, 0);
       const wire = out.slice(4); // "O 0 " prefix
       same("gcf_decode", wire);
-      for (let m = 0; m < 6; m++) same("gcf_decode", mutate(r, m < 3 ? wire : mutate(r, wire)));
+      same("gcf_decode_tape", wire);
+      for (let m = 0; m < 6; m++) {
+        const w = mutate(r, m < 3 ? wire : mutate(r, wire));
+        same("gcf_decode", w);
+        same("gcf_decode_tape", w);
+      }
     }
   });
 
@@ -145,6 +150,7 @@ describeOracle("WAT codec vs Zig engine: decoding", () => {
       const k = Math.floor(r() * 4);
       for (let j = 0; j < k; j++) w = mutate(r, w);
       same("gcf_decode", w);
+      same("gcf_decode_tape", w);
       if (isGraph(w)) same("gcf_decode_graph_columns", w);
     }
   });

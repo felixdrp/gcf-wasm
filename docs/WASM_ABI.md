@@ -55,7 +55,7 @@ A complete, tested host in about 25 lines of plain JavaScript:
 |---|---|
 | `gcf_decode(len)` | JSON text of the decoded value. Integers are exact (int64 digits). |
 | `gcf_decode_graph_columns(len)` | Compact columnar JSON for non-delta graph payloads: `{tool, tokenBudget, tokensUsed, packRoot, names, kinds, provs, types, statuses, k, p, s, d, es, et, ty, st, references?}`. Symbol `i` is `{names[i], kinds[k[i]], s[i], provs[p[i]], d[i]}`; edge `j` is `{names[es[j]], names[et[j]], types[ty[j]], statuses[st[j]]}`. |
-| `gcf_decode_tape(len)` | Binary tape for lazy decoding. Layout documented in [`src/wat/12_tape.wat`](../src/wat/12_tape.wat) and at `TapeWriter` in gcf-zig's `src/gcf.zig`. |
+| `gcf_decode_tape(len)` | Binary tape for lazy decoding. Layout documented in [`src/wat/12_tape.wat`](../src/wat/12_tape.wat) and at `TapeWriter` in gcf-zig's `src/gcf.zig`. Nodes are in post-order (children before their container, the root last); read them through the header's root index and the child indices. |
 | `gcf_output_unsafe_ints()` | 1 if the last JSON output contains an integer beyond ±(2^53−1). JS hosts use it to apply a large-integer policy. |
 
 Decoded shapes:

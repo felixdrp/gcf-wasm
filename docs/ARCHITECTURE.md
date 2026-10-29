@@ -19,13 +19,14 @@ what is specific to the WAT codec is in [`WAT_CODEC.md`](WAT_CODEC.md).
 | Module | File | Role |
 |---|---|---|
 | A | `src/gcf_simd.wat` | Hand-written WAT structural indexer (nibble-table SIMD classification, `i8x16.bitmask` + `i32.ctz`) with line-by-line stack comments |
-| B | `src/wat/*.wat` | The codec (`dist/gcf.wasm`): decoder, encoders, pack roots, deltas, lazy tape. Same ABI as gcf-zig's `gcf.wasm`, byte-identical output ([`WAT_CODEC.md`](WAT_CODEC.md), [`WASM_ABI.md`](WASM_ABI.md)) |
+| B | `src/wat/*.wat` | The codec (`dist/gcf.wasm`): decoder, encoders, pack roots, deltas, lazy tape. Same ABI as gcf-zig's `gcf.wasm`, byte-identical output. Generic documents are decoded in a streaming mode, written while they are parsed ([`WAT_CODEC.md`](WAT_CODEC.md) §10, [`WASM_ABI.md`](WASM_ABI.md)) |
 | — | `src/host.ts` | JS API: `GcfCodec` (decode/encode/deltas, bytes API, lazy decoding), sessions, streaming encoders, `largeInt` policy |
 | — | `src/index.ts`, `src/cli.ts`, `bin/gcf.ts` | npm entry with universal `init()` loader; CLI (`encode` / `decode` / `stats`) |
 | — | `npm/` | The `@felixdrp/gcf-wasm` package (`bun run build:npm`; ships `dist/gcf.wasm`) |
 | C | `test/gcf_compliance.test.ts` | `bun:test` harness: all official conformance fixtures, SIMD cross-validation, host API, robustness |
 | C | `test/gcf_encoder.test.ts`, `test/gcf_boundary.test.ts`, `test/gcf_performance.test.ts`, `test/tutorial.test.ts` | Encoder properties, bytes API and lazy decoding, FUTURE_OPTION A thresholds, tutorial ⇄ examples sync |
 | C | `test/gcf_wat.test.ts` | Every export compared byte for byte with the Zig reference build (`dist/gcf_zig.wasm`), number conversions against JS, SHA-256 against node:crypto |
+| C | `test/gcf_stream.test.ts`, `test/gcf_memory.test.ts` | The streaming decoder on large documents against the Zig build, with peak-memory bounds; releasing memory (`maxRetainedMemory`, `recycle()`) |
 
 ```
 bun install          # wabt (WAT -> wasm compiler, used only at build time)

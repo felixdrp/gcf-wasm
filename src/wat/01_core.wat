@@ -23,6 +23,12 @@
 (global $arena_top (mut i32) (i32.const 0x10000))
 (global $arena_limit (mut i32) (i32.const 0x20000))  ;; = memory.size * 64 KiB
 (global $high_water (mut i32) (i32.const 0))
+;; Arena address below which nothing may be released. A streamed table row
+;; is released after it has been written (the arena goes back to where the
+;; row started), but never below $pin: allocations that outlive the row
+;; (stack blocks, hash tables, identity keys, field declarations, the tape
+;; region) raise it.
+(global $pin (mut i32) (i32.const 0))
 
 (global $in_ptr (mut i32) (i32.const 0))
 (global $out_ptr (mut i32) (i32.const 0))
@@ -104,6 +110,7 @@
 (global $STK_FIELDS i32 (i32.const 0x7960))   ;; 32-byte field entries of a declaration
 (global $STK_DEFER i32 (i32.const 0x7970))    ;; deferred [?] sections: (i64 actual, i32 line)
 (global $STK_EXTRA i32 (i32.const 0x7980))    ;; per-row bare '>' attachments (members)
+(global $STK_TAPE i32 (i32.const 0x7990))     ;; u32 child node indices of tape containers being written
 
 ;; Forget every scratch stack (their blocks live in the arena being reset).
 (func $reset_stacks
@@ -128,8 +135,26 @@
       (if (i32.lt_u (local.get $ncap) (i32.add (local.get $len) (local.get $n)))
         (then (local.set $ncap (i32.add (local.get $len) (local.get $n)))))
       (if (i32.lt_u (local.get $ncap) (i32.const 4096)) (then (local.set $ncap (i32.const 4096))))
+      ;; capacities stay multiples of 8, so a block's end is where the next
+      ;; arena allocation starts
+      (local.set $ncap (i32.and (i32.add (local.get $ncap) (i32.const 7)) (i32.const -8)))
+      ;; the block is the last arena allocation: extend it in place (no copy,
+      ;; and no abandoned block left behind in the arena), by half rather
+      ;; than doubling, since extending costs nothing to copy
+      (if (i32.and (i32.ne (local.get $cap) (i32.const 0))
+                   (i32.eq (i32.add (i32.load (local.get $h)) (local.get $cap)) (global.get $arena_top)))
+        (then
+          (local.set $ncap (i32.add (local.get $cap) (i32.shr_u (local.get $cap) (i32.const 1))))
+          (if (i32.lt_u (local.get $ncap) (i32.add (local.get $len) (local.get $n))) (then (local.set $ncap (i32.add (local.get $len) (local.get $n)))))
+          (local.set $ncap (i32.and (i32.add (local.get $ncap) (i32.const 7)) (i32.const -8)))
+          (if (i32.eqz (call $alloc (i32.sub (local.get $ncap) (local.get $cap)))) (then (return (i32.const 0))))
+          (global.set $pin (global.get $arena_top))
+          (i32.store offset=8 (local.get $h) (local.get $ncap))
+          (i32.store offset=4 (local.get $h) (i32.add (local.get $len) (local.get $n)))
+          (return (i32.add (i32.load (local.get $h)) (local.get $len)))))
       (local.set $new (call $alloc (local.get $ncap)))
       (if (i32.eqz (local.get $new)) (then (return (i32.const 0))))
+      (global.set $pin (global.get $arena_top))
       (memory.copy (local.get $new) (i32.load (local.get $h)) (local.get $len))
       (i32.store (local.get $h) (local.get $new))
       (i32.store offset=8 (local.get $h) (local.get $ncap))))
@@ -185,6 +210,7 @@
 (func (export "gcf_input_alloc") (param $len i32) (result i32)
   (local $p i32)
   (global.set $arena_top (global.get $HEAP))
+  (global.set $pin (i32.const 0))
   (global.set $err (i32.const 0))
   (global.set $err_line (i32.const 0))
   (global.set $err_msg (i32.const 0))

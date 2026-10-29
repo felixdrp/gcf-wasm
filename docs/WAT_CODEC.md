@@ -455,11 +455,95 @@ Results on tabular-large:
 | Speed-up over the TS SDK, Bun | 0.85× | 1.38× |
 | Speed-up over the TS SDK, Node | 0.93× | 1.68× |
 
+## 10. Streaming decode
+
+Until version 0.2, decoding built the whole document as a value tree, then
+wrote JSON or the lazy-decoding tape from it. The tree took about 70 bytes
+per value, so decoding a 11.6 MB table of 300,000 rows peaked at 129 MB
+(JSON) and 220 MB (tape). Since 0.2, `gcf_decode` and `gcf_decode_tape`
+stream generic documents:
+
+* **Document-level containers write themselves while they are parsed.**
+  JSON writes the brackets, keys and separators as it goes; the output
+  cursor stays open for the whole document. The tape is written in
+  post-order (children before their container), so every value is written
+  as soon as it is complete. To keep the two builds byte-identical, gcf-zig
+  writes its tape in the same order; readers follow node indices, so the
+  format did not change.
+* **Each table row is still assembled as a small tree** (attachments,
+  flattening and constant columns need the whole row), written as soon as
+  it is complete, then released: the arena goes back to where the row
+  started. Allocations that must outlive the row (stack blocks, hash
+  tables, identity keys, field declarations that may become a column's
+  schema, the tape region) raise a mark below which nothing is released.
+  A row's members are written straight from the scratch stack, and the
+  per-row slot buffers are allocated once per table.
+* **Output buffers grow in place.** A scratch stack that is the last arena
+  block is extended instead of copied. The tape's words and string pool
+  share one region, laid out as the final result (header, words, pool):
+  it normally sits at the arena top and grows there, moving only the pool
+  when the words need room, and after each row it keeps room for two more
+  rows. It ends up as the output, with no final copy.
+* **Floats leave no garbage**: the digit buffer used for exact conversion is
+  released after each number (this also helps encoding).
+
+Errors are found in the same order as before (the parser's checks did not
+move), so error categories and lines are unchanged; on an error the
+partial output is discarded. Graph and delta payloads, which are small, are
+still decoded as a tree.
+
+### Peak arena use (MB)
+
+`gcf_arena_high_water()`, a fresh instance per call:
+
+| Payload | Operation | 0.1 | 0.2 | |
+|---|---|---:|---:|---:|
+| flat table, 300,000 rows, 11.6 MB GCF | GCF → JSON | 129.2 | **39.5** | −69% |
+| | GCF → tape | 219.7 | **49.9** | −77% |
+| | GCF → tree (`gcf_decode_tree`) | 94.5 | 66.8 | −29% |
+| | JSON → GCF | 99.5 | 93.4 | −6% |
+| mixed rows (array and object cells), 100,000 rows, 8.0 MB GCF | GCF → JSON | 85.5 | **27.3** | −68% |
+| | GCF → tape | 150.2 | **33.9** | −77% |
+| | GCF → tree | 61.4 | 47.4 | −23% |
+| | JSON → GCF | 57.3 | 55.3 | −3% |
+
+Decoding now peaks at about 1.2–1.6 times the input plus the output (the
+input, its line table, the output and its spare capacity): for these
+tables about 3.4 times the GCF input, and 4.3 times for the tape. A table
+of constant columns, whose JSON is 11 times its GCF, peaks at 1.5 times
+input plus output (37.6 MB for 2.0 MB of GCF and 22.4 MB of JSON; 0.1:
+132.5 MB).
+
+### Speed
+
+Minimum time over 50 calls, 50,000 rows, 0.2 against 0.1 (negative is
+faster):
+
+| | Instance reused (memory already grown) | | Fresh instance per call, 200,000 rows | |
+|---|---:|---:|---:|---:|
+| | Bun | Node | Bun | Node |
+| flat: GCF → JSON | −3% | +8% | −21% | −13% |
+| flat: GCF → tape | −9% | −8% | −40% | −39% |
+| mixed: GCF → JSON | 0% | +7% | −17% | −14% |
+| mixed: GCF → tape | −2% | +6% | −31% | −31% |
+
+With an instance whose memory has already grown, the parsing work is the
+same and streaming adds a little bookkeeping per row; V8 also inlines
+differently. A fresh instance (the first call, or after the codec releases
+memory, `maxRetainedMemory`) touches far less new memory, which is where
+streaming is much faster.
+
+The full benchmark against the TypeScript SDK (`bun run bench`, 29 October)
+gives the same speed-ups as the run of 14 October that `bench/README.md`
+reports: the median change of each operation's ratio is within ±5%, inside
+the run-to-run variation of this machine.
+
 ## Running it
 
 ```sh
 git submodule update --init   # reference/gcf-zig, the Zig oracle (needs zig)
-bun run test:oracle      # differential tests, then the main suites against the Zig build
+bun run test:oracle      # differential tests (also of the streaming decoder on large
+                         # documents), then the main suites against the Zig build
 bun run bench:wat        # speed (Bun and Node) and sizes, including the equal-scope
                          # Zig builds; writes bench/results/wat-vs-zig-*.json
 ```

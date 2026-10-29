@@ -445,6 +445,9 @@
     (return (call $nil4))))
   (local.set $cnt (i32.shr_u (i32.sub (call $stack_len (global.get $STK_FIELDS)) (local.get $mark)) (i32.const 5)))
   (local.set $fp (call $stack_pop_to_arena (global.get $STK_FIELDS) (local.get $mark)))
+  ;; a declaration can become a column's inline or shared schema for the
+  ;; rows that follow
+  (global.set $pin (global.get $arena_top))
   (local.get $fp) (local.get $cnt) (i32.add (local.get $p) (local.get $i)) (i32.sub (local.get $n) (local.get $i)))
 
 ;; ---------------------------------------------------------------------------
@@ -507,6 +510,7 @@
   (local.set $cap (select (i32.shl (local.get $ocap) (i32.const 1)) (i32.const 16) (local.get $ocap)))
   (local.set $t (call $alloc (i32.mul (local.get $cap) (i32.const 12))))
   (if (global.get $err) (then (return)))
+  (global.set $pin (global.get $arena_top))
   (memory.fill (local.get $t) (i32.const 0) (i32.mul (local.get $cap) (i32.const 12)))
   (block $done (loop $l
     (br_if $done (i32.ge_u (local.get $i) (local.get $ocap)))
@@ -554,12 +558,15 @@
       (local.set $n (i32.wrap_i64 (local.get $b)))
       (local.set $q (call $alloc (i32.add (local.get $n) (i32.const 1))))
       (if (global.get $err) (then (return (i32.const 0) (i32.const 0))))
+      (global.set $pin (global.get $arena_top))  ;; identity keys outlive the row
       (i32.store8 (local.get $q) (i32.const 0x73))
       (memory.copy (i32.add (local.get $q) (i32.const 1)) (local.get $a) (local.get $n))
       (return (local.get $q) (i32.add (local.get $n) (i32.const 1)))))
   (if (i32.or (i32.eq (local.get $t) (i32.const 3)) (i32.eq (local.get $t) (i32.const 4)))
     (then
-      ;; format through the output buffer, copy out, rewind
+      ;; format through the output buffer, copy out, rewind (publishing a
+      ;; streaming decoder's open cursor first)
+      (if (global.get $jlive) (then (call $w_sync)))
       (local.set $mark (call $stack_len (global.get $STK_OUT)))
       (call $out_byte (i32.const 0x6E))
       (if (i32.eq (local.get $t) (i32.const 3))
@@ -570,7 +577,9 @@
       (if (global.get $err) (then (return (i32.const 0) (i32.const 0))))
       (local.set $n (i32.sub (call $stack_len (global.get $STK_OUT)) (local.get $mark)))
       (local.set $q (call $dup (i32.add (call $stack_base (global.get $STK_OUT)) (local.get $mark)) (local.get $n)))
+      (global.set $pin (global.get $arena_top))
       (call $stack_truncate (global.get $STK_OUT) (local.get $mark))
+      (if (global.get $jlive) (then (call $w_begin (i32.const 0))))
       (return (local.get $q) (local.get $n))))
   (if (i32.eq (local.get $t) (i32.const 2)) (then (return (global.get $S_BTRUE) (i32.const 5))))
   (if (i32.eq (local.get $t) (i32.const 1)) (then (return (global.get $S_BFALSE) (i32.const 6))))

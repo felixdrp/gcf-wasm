@@ -87,11 +87,12 @@ export interface CodecOptions {
    * more while they run: this bounds what stays reserved afterwards, not
    * the peak.
    *
-   * Default: 64 MiB (`DEFAULT_MAX_RETAINED_MEMORY`), which payloads up to
-   * about 5 MB of GCF (10 MB of JSON) never reach. Above it, the first call
-   * on the fresh instance is about 15–30% slower while the memory is
-   * requested again, so if you handle such payloads continuously, raise the
-   * limit or pass `Infinity` to keep the memory.
+   * Default: 64 MiB (`DEFAULT_MAX_RETAINED_MEMORY`), which decoding up to
+   * about 15 MB of GCF, or encoding up to about 15 MB of JSON, does not
+   * reach. Above it, the first large call on the fresh instance is up to
+   * about 25% slower while the memory is requested again, so if you handle
+   * such payloads continuously, raise the limit or pass `Infinity` to keep
+   * the memory.
    */
   maxRetainedMemory?: number;
 }

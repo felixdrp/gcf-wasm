@@ -257,6 +257,11 @@
 (func $root (result i32 i32 i64)
   (local $l i32) (local $t i32) (local $tn i32) (local $no i32) (local $h i32)
   (local $vt i32) (local $va i32) (local $vb i64)
+  ;; the document's containers stream when the export asked for it
+  (global.set $sact (i32.ne (global.get $smode) (i32.const 0)))
+  (global.set $jsep (i32.const 0))
+  (if (i32.eq (global.get $smode) (i32.const 1))
+    (then (call $w_begin (i32.const 0)) (global.set $jlive (i32.const 1))))
   (local.set $l (call $peek))
   (if (i32.eqz (local.get $l)) (then (return (i32.const 7) (i32.const 0) (i64.const 0))))
   (local.set $t (call $lt (local.get $l))) (local.set $tn (call $ltn (local.get $l))) (local.set $no (call $lno (local.get $l)))
@@ -344,6 +349,13 @@
 (func $object_body (param $indent i32) (result i32 i32 i64)
   (local $l i32) (local $mark i32) (local $cnt i32) (local $set i32) (local $kp i32) (local $kn i32)
   (local $vt i32) (local $va i32) (local $vb i64) (local $m i32) (local $i i32) (local $q i32)
+  (local $sm i32) (local $tmark i32)
+  ;; streaming: JSON writes the braces and each member as it is parsed (the
+  ;; members' keys stay on STK_MEMBERS for the duplicate check); the tape
+  ;; writes each member's value when it is appended, the object at the end
+  (local.set $sm (select (global.get $smode) (i32.const 0) (global.get $sact)))
+  (if (i32.eq (local.get $sm) (i32.const 1)) (then (call $je_open (i32.const 0x7B))))
+  (local.set $tmark (call $stack_len (global.get $STK_TAPE)))
   (local.set $mark (call $stack_len (global.get $STK_MEMBERS)))
   (block $done (loop $next
     (local.set $l (call $peek))
@@ -385,11 +397,26 @@
           (local.set $m (i32.add (local.get $m) (i32.const 24)))
           (local.set $i (i32.add (local.get $i) (i32.const 1)))
           (br $sl)))))
+    (if (i32.eq (local.get $sm) (i32.const 2))
+      (then
+        (local.set $va (call $tw_append (local.get $vt) (local.get $va) (local.get $vb)))
+        (if (global.get $err) (then (return (call $nil))))
+        (local.set $vt (i32.const 10))))
     (local.set $q (call $stack_push (global.get $STK_MEMBERS) (i32.const 24)))
     (if (global.get $err) (then (return (call $nil))))
     (call $store_member (local.get $q) (local.get $kp) (local.get $kn) (local.get $vt) (local.get $va) (local.get $vb))
     (local.set $cnt (i32.add (local.get $cnt) (i32.const 1)))
     (br $next)))
+  (if (local.get $sm)
+    (then
+      (local.set $i (i32.const 0))
+      (if (i32.eq (local.get $sm) (i32.const 1))
+        (then (call $je_close (i32.const 0x7D)))
+        (else (local.set $i (call $tw_container (i32.const 7) (i32.add (call $stack_base (global.get $STK_MEMBERS)) (local.get $mark))
+                                                (local.get $cnt) (local.get $tmark)))))
+      (call $stack_truncate (global.get $STK_MEMBERS) (local.get $mark))
+      (call $stack_truncate (global.get $STK_TAPE) (local.get $tmark))
+      (return (i32.const 10) (local.get $i) (i64.extend_i32_u (local.get $cnt)))))
   (i32.const 7)
   (call $stack_pop_to_arena (global.get $STK_MEMBERS) (local.get $mark))
   (i64.extend_i32_u (local.get $cnt)))
@@ -406,6 +433,7 @@
       (call $key (i32.add (local.get $t) (i32.const 3)) (i32.sub (local.get $tn) (i32.const 3)) (local.get $no))
       (local.set $rn) (local.set $rp) (local.set $kn) (local.set $kp)
       (if (global.get $err) (then (return (call $nil5))))
+      (if (call $streaming (i32.const 1)) (then (call $je_key (local.get $kp) (local.get $kn))))
       (if (i32.eqz (local.get $rn))
         (then
           ;; `## key`: nested object, body one level deeper
@@ -426,6 +454,8 @@
       (call $array_body (local.get $h) (local.get $indent) (i32.const 1) (local.get $no) (i32.const 0))
       (local.set $vb) (local.set $va) (local.set $vt)
       (call $leave)
+      (if (i32.and (call $streaming (i32.const 1)) (i32.eqz (global.get $err)))
+        (then (call $je_value (local.get $vt) (local.get $va) (local.get $vb)) (local.set $vt (i32.const 10))))
       (return (local.get $kp) (local.get $kn) (local.get $vt) (local.get $va) (local.get $vb))))
   (if (i32.eq (i32.load8_u (local.get $t)) (i32.const 0x23)) (then (call $fail (i32.const 29) (local.get $no)) (return (call $nil5))))
   (call $key (local.get $t) (local.get $tn) (local.get $no))
@@ -437,6 +467,11 @@
       (local.set $vb) (local.set $va) (local.set $vt)
       (if (global.get $err) (then (return (call $nil5))))
       (call $no_children (local.get $indent))
+      (if (i32.and (call $streaming (i32.const 1)) (i32.eqz (global.get $err)))
+        (then
+          (call $je_key (local.get $kp) (local.get $kn))
+          (call $je_value (local.get $vt) (local.get $va) (local.get $vb))
+          (local.set $vt (i32.const 10))))
       (return (local.get $kp) (local.get $kn) (local.get $vt) (local.get $va) (local.get $vb))))
   (if (i32.and (i32.gt_u (local.get $rn) (i32.const 0)) (i32.eq (i32.load8_u (local.get $rp)) (i32.const 0x5B)))
     (then
@@ -445,6 +480,11 @@
       (if (i32.eqz (i32.load offset=36 (local.get $h))) (then (call $fail (i32.const 29) (local.get $no)) (return (call $nil5))))
       (call $array_body (local.get $h) (local.get $indent) (i32.const 1) (local.get $no) (i32.const 0))
       (local.set $vb) (local.set $va) (local.set $vt)
+      (if (i32.and (call $streaming (i32.const 1)) (i32.eqz (global.get $err)))
+        (then
+          (call $je_key (local.get $kp) (local.get $kn))
+          (call $je_value (local.get $vt) (local.get $va) (local.get $vb))
+          (local.set $vt (i32.const 10))))
       (return (local.get $kp) (local.get $kn) (local.get $vt) (local.get $va) (local.get $vb))))
   (call $fail (i32.const 29) (local.get $no))
   (call $nil5))
@@ -594,7 +634,10 @@
 ;; Expanded per-item form: `@0 =x`, `@1 {}`, `@2 [M]...` (SPEC §7.6).
 (func $expanded_body (param $hasc i32) (param $exp i64) (param $r i32) (param $line i32) (result i32 i32 i64)
   (local $mark i32) (local $items i64) (local $l i32) (local $t i32) (local $tn i32) (local $no i32) (local $sp i32) (local $id i64)
-  (local $vt i32) (local $va i32) (local $vb i64) (local $q i32)
+  (local $vt i32) (local $va i32) (local $vb i64) (local $q i32) (local $sm i32) (local $tmark i32)
+  (local.set $sm (select (global.get $smode) (i32.const 0) (global.get $sact)))
+  (if (i32.eq (local.get $sm) (i32.const 1)) (then (call $je_open (i32.const 0x5B))))
+  (local.set $tmark (call $stack_len (global.get $STK_TAPE)))
   (local.set $mark (call $stack_len (global.get $STK_NODES)))
   (block $done (loop $next
     (local.set $l (call $peek))
@@ -614,18 +657,28 @@
     (if (i64.ne (local.get $id) (local.get $items)) (then (call $fail (i32.const 22) (local.get $no)) (return (call $nil))))
     (call $enter (local.get $no))
     (if (global.get $err) (then (return (call $nil))))
+    (if (i32.eq (local.get $sm) (i32.const 1)) (then (call $je_elem)))
     (call $typed_value (i32.add (local.get $t) (i32.add (local.get $sp) (i32.const 1))) (i32.sub (local.get $tn) (i32.add (local.get $sp) (i32.const 1)))
                        (i32.add (local.get $r) (i32.const 1)) (local.get $no) (i32.const 1) (i32.const 0))
     (local.set $vb) (local.set $va) (local.set $vt)
     (if (global.get $err) (then (return (call $nil))))
     (call $leave)
-    (local.set $q (call $stack_push (global.get $STK_NODES) (i32.const 16)))
-    (if (global.get $err) (then (return (call $nil))))
-    (call $store_node (local.get $q) (local.get $vt) (local.get $va) (local.get $vb))
+    (block $placed
+      (if (i32.eq (local.get $sm) (i32.const 1))
+        (then (call $je_value (local.get $vt) (local.get $va) (local.get $vb)) (br $placed)))
+      (if (i32.eq (local.get $sm) (i32.const 2))
+        (then
+          (drop (call $tw_append (local.get $vt) (local.get $va) (local.get $vb)))
+          (if (global.get $err) (then (return (call $nil))))
+          (br $placed)))
+      (local.set $q (call $stack_push (global.get $STK_NODES) (i32.const 16)))
+      (if (global.get $err) (then (return (call $nil))))
+      (call $store_node (local.get $q) (local.get $vt) (local.get $va) (local.get $vb)))
     (local.set $items (i64.add (local.get $items) (i64.const 1)))
     (br $next)))
   (if (i32.and (local.get $hasc) (i64.ne (local.get $items) (local.get $exp)))
     (then (call $fail (i32.const 18) (local.get $line)) (return (call $nil))))
+  (if (local.get $sm) (then (return (call $stream_end (local.get $sm) (i32.const 0) (i32.const 0) (local.get $tmark) (local.get $items)))))
   (i32.const 6)
   (call $stack_pop_to_arena (global.get $STK_NODES) (local.get $mark))
   (local.get $items))
@@ -804,7 +857,9 @@
 ;; count) with kind 0 = every leaf absent, 1 = every leaf null, 2 = mixed.
 ;; An interior node whose leaves are all `~` is omitted; all `-` leaves make a
 ;; *top-level* flattened field null (SPEC §7.4.6.2 rule 5).
-(func $assemble_level (param $pl i32) (param $idx i32) (param $slots i32) (param $top i32) (result i32 i32 i32)
+;; With `keep`, the members stay on STK_MEMBERS (a streamed row is written
+;; from there and discarded); the caller truncates the stack afterwards.
+(func $assemble_level (param $pl i32) (param $idx i32) (param $slots i32) (param $top i32) (param $keep i32) (result i32 i32 i32)
   (local $mark i32) (local $cnt i32) (local $absent i32) (local $allnull i32) (local $nd i32) (local $col i32) (local $s i32) (local $tag i32)
   (local $k i32) (local $sp i32) (local $sc i32) (local $q i32) (local $ptr i32)
   (local.set $mark (call $stack_len (global.get $STK_MEMBERS)))
@@ -830,7 +885,7 @@
             (v128.store offset=8 (local.get $q) (v128.load (local.get $s)))
             (local.set $cnt (i32.add (local.get $cnt) (i32.const 1))))))
       (else
-        (call $assemble_level (local.get $pl) (i32.load offset=12 (local.get $nd)) (local.get $slots) (i32.const 0))
+        (call $assemble_level (local.get $pl) (i32.load offset=12 (local.get $nd)) (local.get $slots) (i32.const 0) (i32.const 0))
         (local.set $sc) (local.set $sp) (local.set $k)
         (if (global.get $err) (then (return (i32.const 0) (i32.const 0) (i32.const 0))))
         (if (i32.eqz (local.get $k))
@@ -847,7 +902,9 @@
             (local.set $cnt (i32.add (local.get $cnt) (i32.const 1)))))))
     (local.set $idx (i32.load offset=20 (local.get $nd)))
     (br $l)))
-  (local.set $ptr (call $stack_pop_to_arena (global.get $STK_MEMBERS) (local.get $mark)))
+  (local.set $ptr (if (result i32) (local.get $keep)
+    (then (i32.add (call $stack_base (global.get $STK_MEMBERS)) (local.get $mark)))
+    (else (call $stack_pop_to_arena (global.get $STK_MEMBERS) (local.get $mark)))))
   (select (i32.const 0) (select (i32.const 1) (i32.const 2) (local.get $allnull)) (local.get $absent))
   (local.get $ptr)
   (local.get $cnt))
@@ -868,11 +925,13 @@
 ;; Rows
 ;; ---------------------------------------------------------------------------
 
-;; Parse one row line into per-column slots (constants pre-filled).
+;; Parse one row line into per-column slots (constants pre-filled), in the
+;; caller's `slots` buffer (one per table, reused for every row: assembly
+;; copies the values out, so nothing points into it afterwards).
 ;; Returns (row ID or -1, slots, number of attachment markers).
-(func $row_line (param $l i32) (param $pl i32) (param $allow i32) (result i64 i32 i32)
+(func $row_line (param $l i32) (param $pl i32) (param $allow i32) (param $slots i32) (result i64 i32 i32)
   (local $t i32) (local $tn i32) (local $no i32) (local $id i64) (local $sp i32) (local $mark i32) (local $nc i32)
-  (local $slots i32) (local $ncols i32) (local $i i32) (local $c i32) (local $s i32) (local $cell i32) (local $markers i32) (local $kind i32)
+  (local $ncols i32) (local $i i32) (local $c i32) (local $s i32) (local $cell i32) (local $markers i32) (local $kind i32)
   (local $vt i32) (local $va i32) (local $vb i64)
   (local.set $t (call $lt (local.get $l))) (local.set $tn (call $ltn (local.get $l))) (local.set $no (call $lno (local.get $l)))
   (local.set $id (i64.const -1))
@@ -890,8 +949,6 @@
   (if (i32.ne (local.get $nc) (i32.load offset=8 (local.get $pl)))
     (then (call $fail (i32.const 17) (local.get $no)) (return (i64.const 0) (i32.const 0) (i32.const 0))))  ;; row_width_mismatch
   (local.set $ncols (i32.load offset=4 (local.get $pl)))
-  (local.set $slots (call $alloc (i32.shl (local.get $ncols) (i32.const 4))))
-  (if (global.get $err) (then (return (i64.const 0) (i32.const 0) (i32.const 0))))
   (block $done (loop $lp
     (br_if $done (i32.ge_u (local.get $i) (local.get $ncols)))
     (local.set $c (i32.add (i32.load (local.get $pl)) (i32.mul (local.get $i) (i32.const 24))))
@@ -935,8 +992,8 @@
 ;; Consume the attachment bodies of the row at indent `r` (SPEC §7.4.4,
 ;; §7.4.5.2): `.field` headers at r or r+1 with bodies at r+2, and
 ;; positional inline bodies at r or r+1. Bare '>' attachments go to STK_EXTRA.
-(func $attachments (param $slots i32) (param $pl i32) (param $r i32) (param $inl i32) (param $arr i32) (param $xmark i32) (param $row_line i32) (param $row_index i64)
-  (local $ncols i32) (local $i i32) (local $s i32) (local $attached i32) (local $l i32) (local $t i32) (local $tn i32) (local $no i32)
+(func $attachments (param $slots i32) (param $pl i32) (param $r i32) (param $inl i32) (param $arr i32) (param $xmark i32) (param $row_line i32) (param $row_index i64) (param $attached i32)
+  (local $ncols i32) (local $i i32) (local $s i32) (local $l i32) (local $t i32) (local $tn i32) (local $no i32)
   (local $kp i32) (local $kn i32) (local $rp i32) (local $rn i32) (local $ci i32) (local $tmp i32) (local $x i32) (local $xe i32)
   (local $vt i32) (local $va i32) (local $vb i64) (local $q i32) (local $mark i32) (local $nv i32) (local $schema i32) (local $sn i32)
   (local $members i32) (local $j i32) (local $f i32) (local $cell i32)
@@ -951,8 +1008,6 @@
         (i32.store offset=4 (i32.add (local.get $inl) (i32.shl (local.get $i) (i32.const 3))) (i32.load offset=8 (local.get $s)))))
     (local.set $i (i32.add (local.get $i) (i32.const 1)))
     (br $l)))
-  (local.set $attached (call $alloc (local.get $ncols)))
-  (if (global.get $err) (then (return)))
   (memory.fill (local.get $attached) (i32.const 0) (local.get $ncols))
   (block $done (loop $next
     (local.set $l (call $peek))
@@ -1078,13 +1133,18 @@
   (local $pl i32) (local $inl i32) (local $arr i32) (local $mark i32) (local $keys i32) (local $ids i32) (local $n i64) (local $lri i32)
   (local $l i32) (local $t i32) (local $tn i32) (local $no i32) (local $id i64) (local $slots i32) (local $markers i32) (local $xmark i32)
   (local $i i32) (local $s i32) (local $rt i32) (local $rp i32) (local $rc i32) (local $xn i32) (local $kc i32) (local $ikp i32) (local $ikn i32)
-  (local $q i32) (local $all i32) (local $j i32) (local $x i32) (local $m i32) (local $stk i32)
+  (local $q i32) (local $all i32) (local $j i32) (local $x i32) (local $m i32) (local $stk i32) (local $rowbuf i32) (local $attbuf i32)
+  (local $sm i32) (local $tmark i32) (local $rmark i32) (local $atop i32)
+  (local.set $sm (select (global.get $smode) (i32.const 0) (global.get $sact)))
   (if (i32.and (local.get $keyed) (i32.load offset=12 (local.get $fields)))
     (then (call $fail (i32.const 30) (local.get $line)) (return (call $nil))))
   (local.set $pl (call $plan (local.get $fields) (local.get $nf) (i32.const 0) (i32.const 0) (i32.const 0) (local.get $keyed) (local.get $line)))
   (if (global.get $err) (then (return (call $nil))))
   (local.set $inl (call $alloc (i32.shl (local.get $nf) (i32.const 3))))
   (local.set $arr (call $alloc (i32.shl (local.get $nf) (i32.const 3))))
+  ;; per-row buffers, reused for every row
+  (local.set $rowbuf (call $alloc (i32.shl (local.get $nf) (i32.const 4))))
+  (local.set $attbuf (call $alloc (local.get $nf)))
   (if (global.get $err) (then (return (call $nil))))
   (memory.fill (local.get $inl) (i32.const 0) (i32.shl (local.get $nf) (i32.const 3)))
   (memory.fill (local.get $arr) (i32.const 0) (i32.shl (local.get $nf) (i32.const 3)))
@@ -1095,6 +1155,8 @@
   (if (i32.and (i32.ge_s (local.get $kc) (i32.const 0)) (i32.or (i32.eqz (local.get $keyed)) (i32.ne (local.get $kc) (i32.const 0))))
     (then (local.set $ids (call $ks_new))))
   (if (global.get $err) (then (return (call $nil))))
+  (if (i32.eq (local.get $sm) (i32.const 1)) (then (call $je_open (select (i32.const 0x7B) (i32.const 0x5B) (local.get $keyed)))))
+  (local.set $tmark (call $stack_len (global.get $STK_TAPE)))
   (block $done (loop $next
     (local.set $l (call $peek))
     (br_if $done (i32.eqz (local.get $l)))
@@ -1106,7 +1168,10 @@
     (br_if $done (i32.and (i32.and (i32.eqz (local.get $hasc)) (i32.eq (local.get $cont) (i32.const 1)))
                           (call $looks_like_member (call $lt (local.get $l)) (call $ltn (local.get $l)))))
     (call $advance)
-    (call $row_line (local.get $l) (local.get $pl) (i32.const 1))
+    ;; a row is parsed and assembled as a tree, then written whole and released
+    (local.set $atop (global.get $arena_top))
+    (if (local.get $sm) (then (global.set $sact (i32.const 0))))
+    (call $row_line (local.get $l) (local.get $pl) (i32.const 1) (local.get $rowbuf))
     (local.set $markers) (local.set $slots) (local.set $id)
     (if (global.get $err) (then (return (call $nil))))
     (if (i64.ne (local.get $id) (i64.const -1))
@@ -1124,9 +1189,10 @@
       (local.set $i (i32.add (local.get $i) (i32.const 1)))
       (br $il)))
     (local.set $xmark (call $stack_len (global.get $STK_EXTRA)))
-    (call $attachments (local.get $slots) (local.get $pl) (local.get $r) (local.get $inl) (local.get $arr) (local.get $xmark) (local.get $no) (local.get $n))
+    (call $attachments (local.get $slots) (local.get $pl) (local.get $r) (local.get $inl) (local.get $arr) (local.get $xmark) (local.get $no) (local.get $n) (local.get $attbuf))
     (if (global.get $err) (then (return (call $nil))))
-    (call $assemble_level (local.get $pl) (i32.load offset=24 (local.get $pl)) (local.get $slots) (i32.const 1))
+    (local.set $rmark (call $stack_len (global.get $STK_MEMBERS)))
+    (call $assemble_level (local.get $pl) (i32.load offset=24 (local.get $pl)) (local.get $slots) (i32.const 1) (i32.ne (local.get $sm) (i32.const 0)))
     (local.set $rc) (local.set $rp) (drop)
     (if (global.get $err) (then (return (call $nil))))
     ;; append bare '>' attachments after the columns
@@ -1167,16 +1233,13 @@
     (if (local.get $keyed)
       (then
         (if (i32.ne (i32.load (local.get $slots)) (i32.const 5)) (then (call $fail (i32.const 28) (local.get $no)) (return (call $nil))))
+        ;; the set keeps the key's slice, which may be the row's decoded string
+        (global.set $pin (global.get $arena_top))
         (if (call $ks_insert (local.get $keys) (i32.load offset=4 (local.get $slots)) (i32.load offset=8 (local.get $slots)))
-          (then (call $fail_msg (i32.const 15) (local.get $no) (i32.const 64)) (return (call $nil))))
-        (local.set $q (call $stack_push (global.get $STK_MEMBERS) (i32.const 24)))
-        (if (global.get $err) (then (return (call $nil))))
-        (call $store_member (local.get $q) (i32.load offset=4 (local.get $slots)) (i32.load offset=8 (local.get $slots))
-                            (i32.const 7) (local.get $rp) (i64.extend_i32_u (local.get $rc))))
-      (else
-        (local.set $q (call $stack_push (global.get $STK_NODES) (i32.const 16)))
-        (if (global.get $err) (then (return (call $nil))))
-        (call $store_node (local.get $q) (i32.const 7) (local.get $rp) (i64.extend_i32_u (local.get $rc)))))
+          (then (call $fail_msg (i32.const 15) (local.get $no) (i32.const 64)) (return (call $nil))))))
+    (if (local.get $sm) (then (global.set $sact (i32.const 1))))
+    (call $place_row (local.get $sm) (local.get $keyed) (local.get $slots) (local.get $rp) (local.get $rc) (local.get $rmark) (local.get $atop))
+    (if (global.get $err) (then (return (call $nil))))
     (local.set $n (i64.add (local.get $n) (i64.const 1)))
     (br $next)))
   (if (local.get $hasc)
@@ -1184,6 +1247,8 @@
       (if (i64.ne (local.get $n) (local.get $exp)) (then (call $fail (i32.const 18) (local.get $line)) (return (call $nil))))
       (call $surplus_check (local.get $r) (local.get $cont) (local.get $lri) (local.get $exp))
       (if (global.get $err) (then (return (call $nil))))))
+  (if (local.get $sm)
+    (then (return (call $stream_end (local.get $sm) (local.get $keyed) (local.get $mark) (local.get $tmark) (local.get $n)))))
   (select (i32.const 7) (i32.const 6) (local.get $keyed))
   (call $stack_pop_to_arena (local.get $stk) (local.get $mark))
   (local.get $n))
@@ -1204,13 +1269,84 @@
   (if (local.get $lri) (then (call $fail (i32.const 24) (call $lno (local.get $l))) (return)))
   (call $fail (i32.const 18) (call $lno (local.get $l))))
 
+;; Place an assembled table row (members at `rp`, `rc` of them): streamed
+;; rows are written (JSON, or the tape with a keyed map's key kept on
+;; STK_MEMBERS) and released; otherwise the row is pushed for the tree, on
+;; STK_MEMBERS for a keyed map (key from the slots) or STK_NODES. A streamed
+;; row's members are on STK_MEMBERS from `rmark`; `atop` is where the arena
+;; stood when the row started. Kept out of $tabular_body to keep that small.
+(func $place_row (param $sm i32) (param $keyed i32) (param $slots i32) (param $rp i32) (param $rc i32) (param $rmark i32) (param $atop i32)
+  (local $q i32) (local $j i32)
+  (if (i32.eq (local.get $sm) (i32.const 1))
+    (then
+      (call $je_row (i32.load offset=4 (local.get $slots))
+                    (select (i32.load offset=8 (local.get $slots)) (i32.const -1) (local.get $keyed))
+                    (local.get $rp) (local.get $rc))
+      (call $stack_truncate (global.get $STK_MEMBERS) (local.get $rmark))
+      (call $release_row (local.get $atop))
+      (return)))
+  (if (i32.eq (local.get $sm) (i32.const 2))
+    (then
+      (local.set $j (call $tw_row (local.get $rp) (local.get $rc)))
+      (if (global.get $err) (then (return)))
+      (call $stack_truncate (global.get $STK_MEMBERS) (local.get $rmark))
+      (if (local.get $keyed)
+        (then
+          ;; a keyed map's members keep their keys for the object node
+          (local.set $q (call $stack_push (global.get $STK_MEMBERS) (i32.const 24)))
+          (if (global.get $err) (then (return)))
+          (call $store_member (local.get $q) (i32.load offset=4 (local.get $slots)) (i32.load offset=8 (local.get $slots))
+                              (i32.const 10) (local.get $j) (i64.const 0))))
+      (call $release_row (local.get $atop))
+      (return)))
+  (if (local.get $keyed)
+    (then
+      (local.set $q (call $stack_push (global.get $STK_MEMBERS) (i32.const 24)))
+      (if (global.get $err) (then (return)))
+      (call $store_member (local.get $q) (i32.load offset=4 (local.get $slots)) (i32.load offset=8 (local.get $slots))
+                          (i32.const 7) (local.get $rp) (i64.extend_i32_u (local.get $rc))))
+    (else
+      (local.set $q (call $stack_push (global.get $STK_NODES) (i32.const 16)))
+      (if (global.get $err) (then (return)))
+      (call $store_node (local.get $q) (i32.const 7) (local.get $rp) (i64.extend_i32_u (local.get $rc))))))
+
+;; Release what a streamed row allocated (it has been written): back to
+;; where the row started, but not below $pin. The tape's key cache holds
+;; slices; it is cleared when one of them was in the released memory.
+(func $release_row (param $top i32)
+  (if (i32.lt_u (local.get $top) (global.get $pin)) (then (local.set $top (global.get $pin))))
+  (if (i32.lt_u (local.get $top) (global.get $arena_top))
+    (then
+      (global.set $arena_top (local.get $top))
+      (if (i32.and (i32.eq (global.get $smode) (i32.const 2)) (i32.gt_u (global.get $twc_hi) (local.get $top)))
+        (then
+          (memory.fill (global.get $TW_CACHE) (i32.const 0) (i32.const 768))
+          (global.set $twc_hi (i32.const 0))))))
+  (if (i32.eq (global.get $smode) (i32.const 2)) (then (call $tr_headroom))))
+
+;; Close a streamed array (or keyed map, written as an object): JSON writes
+;; the bracket; the tape writes the container from the child indices on
+;; STK_TAPE (a keyed map's keys are its members on STK_MEMBERS from `mark`).
+(func $stream_end (param $sm i32) (param $keyed i32) (param $mark i32) (param $tmark i32) (param $n i64) (result i32 i32 i64)
+  (local $idx i32)
+  (if (i32.eq (local.get $sm) (i32.const 1))
+    (then (call $je_close (select (i32.const 0x7D) (i32.const 0x5D) (local.get $keyed))))
+    (else
+      (local.set $idx (call $tw_container (select (i32.const 7) (i32.const 6) (local.get $keyed))
+                                          (i32.add (call $stack_base (global.get $STK_MEMBERS)) (local.get $mark))
+                                          (i32.wrap_i64 (local.get $n)) (local.get $tmark)))
+      (if (local.get $keyed) (then (call $stack_truncate (global.get $STK_MEMBERS) (local.get $mark))))
+      (call $stack_truncate (global.get $STK_TAPE) (local.get $tmark))))
+  (i32.const 10) (local.get $idx) (local.get $n))
+
 ;; Value-grouped keyed set (SPEC §7.4.8).
 (func $grouped_body (param $fields i32) (param $nf i32) (param $gp i32) (param $gn i32) (param $exp i64) (param $r i32) (param $line i32) (result i32 i32 i64)
   (local $i i32) (local $f i32) (local $keys_n i32) (local $ok i32) (local $pl i32) (local $gcol i32) (local $kcol i32)
   (local $ids i32) (local $groups i32) (local $mark i32) (local $total i64) (local $l i32) (local $t i32) (local $tn i32) (local $no i32)
   (local $kp i32) (local $kn i32) (local $rp i32) (local $rn i32) (local $bp i32) (local $bn i32) (local $br i32) (local $cnt i64) (local $k i64)
   (local $gt i32) (local $ga i32) (local $gb i64) (local $ikp i32) (local $ikn i32) (local $rl i32) (local $id i64) (local $slots i32) (local $s i32)
-  (local $rc i32) (local $rpp i32) (local $q i32)
+  (local $rc i32) (local $rpp i32) (local $q i32) (local $rowbuf i32) (local $sm i32) (local $tmark i32) (local $rmark i32) (local $atop i32)
+  (local.set $sm (select (global.get $smode) (i32.const 0) (global.get $sact)))
   (block $done (loop $l2
     (br_if $done (i32.ge_u (local.get $i) (local.get $nf)))
     (local.set $f (i32.add (local.get $fields) (i32.shl (local.get $i) (i32.const 5))))
@@ -1227,11 +1363,14 @@
   (local.set $pl (call $plan (local.get $fields) (local.get $nf) (local.get $gp) (local.get $gn) (i32.const 1) (i32.const 0) (local.get $line)))
   (if (global.get $err) (then (return (call $nil))))
   (local.set $gcol (call $find_column (local.get $pl) (local.get $gp) (local.get $gn)))
+  (local.set $rowbuf (call $alloc (i32.shl (local.get $nf) (i32.const 4))))
   (local.set $kcol (i32.load offset=20 (local.get $pl)))
   (local.set $ids (call $ks_new))
   (local.set $groups (call $ks_new))
   (if (global.get $err) (then (return (call $nil))))
   (local.set $mark (call $stack_len (global.get $STK_NODES)))
+  (if (i32.eq (local.get $sm) (i32.const 1)) (then (call $je_open (i32.const 0x5B))))
+  (local.set $tmark (call $stack_len (global.get $STK_TAPE)))
   (block $done (loop $next
     (local.set $l (call $peek))
     (br_if $done (i32.eqz (local.get $l)))
@@ -1284,7 +1423,9 @@
       (if (i32.or (i32.ne (call $lind (local.get $rl)) (local.get $r)) (call $lstarts (local.get $rl) (global.get $S_SUMMARY) (i32.const 2)))
         (then (call $fail (i32.const 18) (local.get $no)) (return (call $nil))))
       (call $advance)
-      (call $row_line (local.get $rl) (local.get $pl) (i32.const 0))
+      (local.set $atop (global.get $arena_top))
+      (if (local.get $sm) (then (global.set $sact (i32.const 0))))
+      (call $row_line (local.get $rl) (local.get $pl) (i32.const 0) (local.get $rowbuf))
       (drop) (local.set $slots) (local.set $id)
       (if (global.get $err) (then (return (call $nil))))
       (if (i64.ne (local.get $id) (i64.const -1)) (then (call $fail (i32.const 29) (call $lno (local.get $rl))) (return (call $nil))))
@@ -1296,18 +1437,20 @@
       (if (global.get $err) (then (return (call $nil))))
       (if (call $ks_insert (local.get $ids) (local.get $ikp) (local.get $ikn))
         (then (call $fail (i32.const 15) (call $lno (local.get $rl))) (return (call $nil))))
-      (call $assemble_level (local.get $pl) (i32.load offset=24 (local.get $pl)) (local.get $slots) (i32.const 1))
+      (local.set $rmark (call $stack_len (global.get $STK_MEMBERS)))
+      (call $assemble_level (local.get $pl) (i32.load offset=24 (local.get $pl)) (local.get $slots) (i32.const 1) (i32.ne (local.get $sm) (i32.const 0)))
       (local.set $rc) (local.set $rpp) (drop)
       (if (global.get $err) (then (return (call $nil))))
-      (local.set $q (call $stack_push (global.get $STK_NODES) (i32.const 16)))
+      (if (local.get $sm) (then (global.set $sact (i32.const 1))))
+      (call $place_row (local.get $sm) (i32.const 0) (i32.const 0) (local.get $rpp) (local.get $rc) (local.get $rmark) (local.get $atop))
       (if (global.get $err) (then (return (call $nil))))
-      (call $store_node (local.get $q) (i32.const 7) (local.get $rpp) (i64.extend_i32_u (local.get $rc)))
       (local.set $k (i64.add (local.get $k) (i64.const 1)))
       (br $rlp)))
     (local.set $total (i64.add (local.get $total) (local.get $cnt)))
     (if (i64.gt_u (local.get $total) (local.get $exp)) (then (call $fail (i32.const 18) (local.get $no)) (return (call $nil))))
     (br $next)))
   (if (i64.ne (local.get $total) (local.get $exp)) (then (call $fail (i32.const 18) (local.get $line)) (return (call $nil))))
+  (if (local.get $sm) (then (return (call $stream_end (local.get $sm) (i32.const 0) (i32.const 0) (local.get $tmark) (local.get $total)))))
   (i32.const 6)
   (call $stack_pop_to_arena (global.get $STK_NODES) (local.get $mark))
   (local.get $total))
@@ -1318,6 +1461,7 @@
   (global.set $pos (i32.const 0))
   (global.set $depth (i32.const 0))
   (global.set $nlines (i32.const 0))
+  (global.set $sact (i32.const 0))  ;; set by $root for a streamed generic document
   (call $build_document (local.get $src) (local.get $len))
   (if (global.get $err) (then (return (call $nil))))
   (if (global.get $profile)

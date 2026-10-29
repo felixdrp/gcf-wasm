@@ -127,6 +127,7 @@
   (local.set $cap (select (i32.shl (local.get $ocap) (i32.const 1)) (i32.const 16) (local.get $ocap)))
   (local.set $t (call $alloc (i32.shl (local.get $cap) (i32.const 4))))
   (if (global.get $err) (then (return)))
+  (global.set $pin (global.get $arena_top))
   (memory.fill (local.get $t) (i32.const 0) (i32.shl (local.get $cap) (i32.const 4)))
   (block $done (loop $l
     (br_if $done (i32.ge_u (local.get $i) (local.get $ocap)))
