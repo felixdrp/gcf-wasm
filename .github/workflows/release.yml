@@ -4,7 +4,8 @@
 #     without debug names (dist/gcf.wasm), the same module the npm package
 #     ships, plus the SIMD structural indexer (gcf_simd.wasm,
 #     gcf_simd.relaxed.wasm)
-#   * @felixdrp/gcf-wasm to npm with provenance
+#   * @felixdrp/gcf-wasm to npm with provenance, unless that version is
+#     already on npm (published by hand)
 # Requires the repository secret NPM_TOKEN (or npm trusted publishing).
 name: release
 
@@ -60,8 +61,17 @@ jobs:
         with:
           files: release/*
           generate_release_notes: true
-      - name: Publish to npm
+      # A version already published by hand (bun publish / npm publish) is
+      # skipped, so the release above still counts as a success.
+      - name: Publish to npm (unless this version is already published)
         working-directory: npm
-        run: npm publish --access public --provenance
+        run: |
+          name=$(node -p 'require("./package.json").name')
+          version=$(node -p 'require("./package.json").version')
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "$name@$version is already on npm: skipping publish"
+          else
+            npm publish --access public --provenance
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
