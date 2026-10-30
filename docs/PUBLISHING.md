@@ -39,7 +39,7 @@ gcf-zig was pushed may still use a local path; after the push, run
 
 On GitHub:
 
-* **Description.** "Fast, strict GCF codec: 88 KB hand-written WebAssembly
+* **Description.** "Fast, strict GCF codec: 93 KB hand-written WebAssembly
   (SIMD) + npm".
 * **Topics.** `webassembly`, `wasm`, `wat`, `simd`, `gcf`, `llm`,
   `serialization`.

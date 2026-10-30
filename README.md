@@ -3,7 +3,7 @@
 A fast, strict codec for the **Graph Compact Format** (GCF v3.6.0), the
 token-efficient wire format for LLM tool responses specified by
 [Blackwell Systems](https://github.com/blackwell-systems/gcf). The engine is
-a single 88 KB WebAssembly module written by hand in WebAssembly text, with
+a single 93 KB WebAssembly module written by hand in WebAssembly text, with
 128-bit SIMD and no imports, plus a zero-dependency JavaScript API.
 
 | For | Package | Install |
